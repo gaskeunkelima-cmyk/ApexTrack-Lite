@@ -62,74 +62,6 @@ try {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Offers</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        main {
-            flex-grow: 1;
-            padding: 1.5rem 2.5rem;
-        }
-        .card {
-            background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-        }
-        .table-container {
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        .table-cell {
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            line-height: 1.25rem;
-            color: #4b5563;
-            border: 1px solid #e5e7eb;
-        }
-        .table-header {
-            background-color: #f9fafb;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-        }
-        .status-badge {
-            display: inline-flex;
-            font-size: 0.75rem;
-            line-height: 1rem;
-            font-weight: 600;
-            border-radius: 9999px;
-            padding: 0.25rem 0.5rem;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-</head>
 
 <main class="p-6 md:p-10 lg:p-12 w-full font-sans">
     <h2 class="text-3xl font-bold text-gray-900 mb-6">Offers Management</h2>
@@ -164,7 +96,7 @@ try {
                         <th class="table-cell">Status</th>
                         <th class="table-cell">Negara</th>
                         <th class="table-cell">Perangkat</th>
-                        <th class="table-cell">Proxy</th>
+                        <th class="table-cell">Check Proxy</th>
                         <th class="table-cell">Aksi</th>
                     </tr>
                 </thead>

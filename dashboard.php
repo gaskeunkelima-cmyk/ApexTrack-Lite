@@ -111,7 +111,7 @@ try {
         </div>
     </div>
 
-    <div class="card p-6 rounded-lg shadow-md bg-white mt-6">
+    <div class="card p-6 shadow-md bg-white mt-6">
         <div class="flex items-center text-gray-900 mb-4">
             <h3 class="text-xl font-semibold">Recent Clicks</h3>
         </div>
@@ -192,7 +192,7 @@ try {
     </div>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <div class="card p-6 rounded-lg shadow-md bg-white">
+        <div class="card p-6 shadow-md bg-white">
             <div class="flex items-center text-gray-900 mb-4">
                 <h3 class="text-xl font-semibold">Performance Report</h3>
             </div>
@@ -235,7 +235,7 @@ try {
             </div>
         </div>
         
-        <div class="card p-6 rounded-lg shadow-md bg-white">
+        <div class="card p-6 shadow-md bg-white">
             <div class="flex items-center text-gray-900 mb-4">
                 <h3 class="text-xl font-semibold">Recent Conversions</h3>
             </div>
