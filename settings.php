@@ -6,12 +6,23 @@ $allowedFileTypes = ['image/x-icon', 'image/vnd.microsoft.icon'];
 $message = '';
 $messageType = '';
 
+// Pengaturan pembaruan versi
+$versionFile = 'version.txt';
+$repoUrl = 'https://raw.githubusercontent.com/apextrack/ApexTrack-Lite/refs/heads/master/';
+$currentVersion = '1.0.1'; // Versi awal jika file tidak ada
+
+if (file_exists($versionFile)) {
+    $currentVersion = trim(file_get_contents($versionFile));
+}
+
+// Cek apakah direktori uploads ada, jika tidak, buat
 if (!is_dir($uploadsDir)) {
     if (!mkdir($uploadsDir, 0755, true)) {
         die('Gagal membuat direktori uploads.');
     }
 }
 
+// Muat pengaturan yang sudah ada
 $siteName = '';
 $faviconUrl = '';
 if (file_exists($settingsFile)) {
@@ -23,6 +34,7 @@ if (file_exists($settingsFile)) {
     }
 }
 
+// Tangani pengiriman formulir
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newSiteName = trim($_POST['site_name'] ?? '');
 
@@ -84,44 +96,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Logika cek pembaruan
+$latestVersion = null;
+$updateAvailable = false;
+$updateMessage = '';
+$context = stream_context_create([
+    'http' => ['header' => 'User-Agent: PHP-Script']
+]);
+$latestVersionUrl = $repoUrl . 'version.txt';
+$latestVersionData = @file_get_contents($latestVersionUrl, false, $context);
+
+if ($latestVersionData !== false) {
+    $latestVersion = trim($latestVersionData);
+    if (version_compare($latestVersion, $currentVersion, '>')) {
+        $updateAvailable = true;
+        $updateMessage = "Versi baru ({$latestVersion}) tersedia.";
+    }
+}
+
 include 'layout/header.php';
 ?>
 <main class="p-6 md:p-10 lg:p-12 w-full font-sans">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6">Pengaturan Website</h2>
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Pengaturan Website</h2>
 
-        <?php if ($message): ?>
-            <div class="text-center p-4 mb-4 rounded-lg
-                    <?php echo $messageType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
-                <?php echo $message; ?>
-            </div>
-        <?php endif; ?>
+    <?php if ($message): ?>
+        <div class="text-center p-4 mb-4 rounded-lg
+            <?php echo $messageType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
+            <?php echo $message; ?>
+        </div>
+    <?php endif; ?>
 
-        <form action="" method="POST" enctype="multipart/form-data" class="space-y-6 bg-white p-6 rounded-lg shadow-lg">
-            <div>
-                <label for="site_name" class="block text-sm font-medium text-gray-700">Nama Website</label>
-                <input type="text" id="site_name" name="site_name" value="<?php echo $siteName; ?>" required
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            
-            <div>
-                <label for="favicon_file" class="block text-sm font-medium text-gray-700">Unggah Favicon (.ico)</label>
-                <input type="file" id="favicon_file" name="favicon_file" accept=".ico"
-                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                <p class="mt-2 text-xs text-gray-500">Maks. ukuran file 2 MB. Hanya format .ico yang didukung.</p>
-                <div class="mt-4 flex items-center space-x-2">
-                    <p class="text-sm text-gray-500">Favicon saat ini:</p>
-                    <img src="<?php echo $faviconUrl; ?>" alt="Favicon Website Saat Ini" class="w-8 h-8 rounded-full shadow">
-                </div>
-            </div>
-            
-            <button type="submit"
-                    class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out">
-                Simpan Pengaturan
+    <div class="text-center p-4 mb-4 rounded-lg bg-gray-100 text-gray-800">
+        <p class="font-semibold">Versi Aplikasi:</p>
+        <p>Versi saat ini: **<?php echo $currentVersion; ?>**</p>
+        <?php if ($updateAvailable): ?>
+            <p class="text-green-600 mt-2 font-bold"><?php echo $updateMessage; ?></p>
+            <button id="update-button" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                <i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang
             </button>
-        </form>
+        <?php else: ?>
+            <p class="text-gray-500 mt-2">Anda menggunakan versi terbaru.</p>
+        <?php endif; ?>
     </div>
-</main>
 
+    <form action="" method="POST" enctype="multipart/form-data" class="space-y-6 bg-white p-6 shadow-lg">
+        <div>
+            <label for="site_name" class="block text-sm font-medium text-gray-700">Nama Website</label>
+            <input type="text" id="site_name" name="site_name" value="<?php echo $siteName; ?>" required
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        
+        <div>
+            <label for="favicon_file" class="block text-sm font-medium text-gray-700">Unggah Favicon (.ico)</label>
+            <input type="file" id="favicon_file" name="favicon_file" accept=".ico"
+                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            <p class="mt-2 text-xs text-gray-500">Maks. ukuran file 2 MB. Hanya format .ico yang didukung.</p>
+            <div class="mt-4 flex items-center space-x-2">
+                <p class="text-sm text-gray-500">Favicon saat ini:</p>
+                <img src="<?php echo $faviconUrl; ?>" alt="Favicon Website Saat Ini" class="w-8 h-8 rounded-full shadow">
+            </div>
+        </div>
+        
+        <button type="submit"
+                class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out">
+            Simpan Pengaturan
+        </button>
+    </form>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const updateButton = document.getElementById('update-button');
+
+    if (updateButton) {
+        updateButton.addEventListener('click', function() {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memperbarui...';
+            
+            fetch('update.php')
+                .then(response => response.text())
+                .then(text => {
+                    alert(text);
+                    if (text.includes("Pembaruan berhasil!")) {
+                        window.location.reload();
+                    } else {
+                        this.disabled = false;
+                        this.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang';
+                    }
+                })
+                .catch(error => {
+                    alert('Terjadi kesalahan saat memperbarui.');
+                    console.error('Error:', error);
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang';
+                });
+        });
+    }
+});
+</script>
 <?php
 include 'layout/footer.php';
 ?>

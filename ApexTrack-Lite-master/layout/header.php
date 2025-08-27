@@ -52,53 +52,6 @@ if (file_exists($settingsFile)) {
             transform: scale(1);
             opacity: 1;
         }
-                .card {
-            background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-        }
-        .table-container {
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        .table-cell {
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            line-height: 1.25rem;
-            color: #4b5563;
-            border: 1px solid #e5e7eb;
-        }
-        .table-header {
-            background-color: #f9fafb;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-        }
-        .status-badge {
-            display: inline-flex;
-            font-size: 0.75rem;
-            line-height: 1rem;
-            font-weight: 600;
-            border-radius: 9999px;
-            padding: 0.25rem 0.5rem;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal flex flex-col min-h-screen">
