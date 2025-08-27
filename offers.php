@@ -10,14 +10,6 @@ if (!isset($_SESSION['auth_token'])) {
 
 $token = $_SESSION['auth_token'];
 
-/**
- * Mengambil data dari endpoint API yang diberikan menggunakan cURL.
- *
- * @param string $endpoint URL endpoint API.
- * @param string $token Token otorisasi.
- * @return array Data yang didekodekan dari respons API.
- * @throws Exception jika permintaan API gagal.
- */
 function fetchData($endpoint, $token)
 {
     if (!$token) {
@@ -75,7 +67,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Penawaran</title>
+    <title>Manajemen Offers</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -91,12 +83,10 @@ try {
         }
         .card {
             background-color: white;
-            border-radius: 0.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
         }
         .table-container {
-            border-radius: 0.5rem;
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
@@ -136,15 +126,13 @@ try {
         .modal-content {
             background-color: white;
             padding: 2rem;
-            border-radius: 0.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body>
 
 <main class="p-6 md:p-10 lg:p-12 w-full font-sans">
-    <h2 class="text-3xl font-bold text-gray-900 mb-6">Manajemen Penawaran</h2>
+    <h2 class="text-3xl font-bold text-gray-900 mb-6">Offers Management</h2>
 
     <div id="message-container" class="mb-4 hidden">
         <div id="message-box" class="px-4 py-3 rounded relative" role="alert">
@@ -153,17 +141,13 @@ try {
         </div>
     </div>
     
-    <div class="mb-6 flex justify-end">
-        <button id="open-add-modal" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition-colors">
-            Tambah Penawaran Baru
-        </button>
-    </div>
-
     <div class="card p-6 rounded-lg shadow-md bg-white">
-        <div class="flex items-center text-gray-900 mb-4">
-            <h3 class="text-xl font-semibold">Daftar Penawaran</h3>
+        <div class="mb-6 flex justify-between items-center">
+            <h3 class="text-xl font-semibold">Daftar Offers</h3>
+            <button id="open-add-modal" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+                Add Offers
+            </button>
         </div>
-        
         <?php if ($error): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
                 <strong class="font-bold">Error:</strong>
@@ -210,15 +194,15 @@ try {
                                     <?php echo ($offer['can_show_to_proxy'] ?? false) ? 'Ya' : 'Tidak'; ?>
                                 </td>
                                 <td class="table-cell flex gap-2">
-                                    <button onclick='openEditModal(<?php echo htmlspecialchars(json_encode($offer)); ?>)' class="text-blue-600 hover:text-blue-900">Edit</button>
-                                    <button onclick='confirmDelete(<?php echo htmlspecialchars(json_encode($offer['id'])); ?>)' class="text-red-600 hover:text-red-900">Hapus</button>
+                                    <button onclick='openEditModal(<?php echo htmlspecialchars(json_encode($offer), ENT_QUOTES, 'UTF-8'); ?>)' class="text-blue-600 hover:text-blue-900">Edit</button>
+                                    <button onclick='confirmDelete(<?php echo htmlspecialchars(json_encode($offer['id']), ENT_QUOTES, 'UTF-8'); ?>)' class="text-red-600 hover:text-red-900">Hapus</button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
                             <td colspan="7" class="table-cell text-center text-gray-500 py-4">
-                                <?php echo $error ? 'Gagal memuat data.' : 'Tidak ada penawaran yang ditemukan.'; ?>
+                                <?php echo $error ? 'Gagal memuat data.' : 'Tidak ada Offers yang ditemukan.'; ?>
                             </td>
                         </tr>
                     <?php endif; ?>
@@ -230,21 +214,21 @@ try {
 
 <div id="offer-modal" class="modal">
     <div class="modal-content card max-w-lg w-full">
-        <h3 id="modal-title" class="text-xl font-semibold mb-4 text-gray-900">Tambah Penawaran Baru</h3>
+        <h3 id="modal-title" class="text-xl font-semibold mb-4 text-gray-900">Tambah Offers Baru</h3>
         <form id="offer-form">
             <input type="hidden" id="offer-id" name="id">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Penawaran</label>
-                    <input type="text" name="name" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Contoh: Promo Ramadhan 2025" required>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Offers</label>
+                    <input type="text" name="name" id="name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: Promo Ramadhan 2025" required>
                 </div>
                 <div>
                     <label for="url" class="block text-sm font-medium text-gray-700">URL</label>
-                    <input type="url" name="url" id="url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="https://www.contoh.com" required>
+                    <input type="url" name="url" id="url" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="https://www.contoh.com" required>
                 </div>
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                    <select name="status" id="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                    <select name="status" id="status" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                         <option value="active">Active</option>
                         <option value="paused">Paused</option>
                         <option value="pending">Pending</option>
@@ -252,21 +236,21 @@ try {
                 </div>
                 <div>
                     <label for="country" class="block text-sm font-medium text-gray-700">Negara</label>
-                    <input type="text" name="country" id="country" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Contoh: US, ID, Global" required>
+                    <input type="text" name="country" id="country" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: US, ID, Global" required>
                 </div>
                 <div>
                     <label for="device" class="block text-sm font-medium text-gray-700">Perangkat</label>
-                    <input type="text" name="device" id="device" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Contoh: Mobile, Desktop, All">
+                    <input type="text" name="device" id="device" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: Mobile, Desktop, All">
                 </div>
                 <div class="flex items-center">
                     <input id="can_show_to_proxy" name="can_show_to_proxy" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                    <label for="can_show_to_proxy" class="ml-2 block text-sm text-gray-900">Tampilkan ke Proxy</label>
+                    <label for="can_show_to_proxy" class="ml-2 block text-sm text-gray-900">Check Proxy</label>
                 </div>
             </div>
             <div class="mt-6 flex justify-end gap-4">
                 <button type="button" id="close-modal" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400">Batal</button>
                 <button type="submit" id="submit-btn" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Simpan Penawaran
+                    Simpan Offers
                 </button>
             </div>
         </form>
@@ -276,7 +260,7 @@ try {
 <div id="delete-modal" class="modal">
     <div class="modal-content card max-w-sm text-center">
         <h3 class="text-lg font-bold mb-4">Konfirmasi Penghapusan</h3>
-        <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus penawaran ini?</p>
+        <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus Offers ini?</p>
         <div class="flex justify-center gap-4">
             <button id="cancel-delete" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400">Batal</button>
             <button id="confirm-delete" class="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700">Hapus</button>
@@ -302,7 +286,7 @@ try {
 
     function showMessage(type, title, message) {
         messageContainer.classList.remove('hidden');
-        messageBox.classList.remove('bg-green-100', 'border-green-400', 'text-green-700', 'bg-red-100', 'border-red-400', 'text-red-700');
+        messageBox.className = 'px-4 py-3 rounded relative';
         if (type === 'success') {
             messageBox.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
         } else {
@@ -333,7 +317,7 @@ try {
             const offers = data.data;
 
             if (offers.length === 0) {
-                offersTableBody.innerHTML = `<tr><td colspan="7" class="table-cell text-center text-gray-500 py-4">Tidak ada penawaran yang ditemukan.</td></tr>`;
+                offersTableBody.innerHTML = `<tr><td colspan="7" class="table-cell text-center text-gray-500 py-4">Tidak ada Offers yang ditemukan.</td></tr>`;
                 return;
             }
 
@@ -375,8 +359,8 @@ try {
     }
 
     document.getElementById('open-add-modal').addEventListener('click', () => {
-        modalTitle.innerText = 'Tambah Penawaran Baru';
-        submitBtn.innerText = 'Simpan Penawaran';
+        modalTitle.innerText = 'Tambah Offers Baru';
+        submitBtn.innerText = 'Simpan Offers';
         offerIdInput.value = ''; 
         offerForm.reset();
         offerModal.style.display = 'flex';
@@ -393,8 +377,8 @@ try {
     });
 
     function openEditModal(offer) {
-        modalTitle.innerText = 'Edit Penawaran';
-        submitBtn.innerText = 'Perbarui Penawaran';
+        modalTitle.innerText = 'Edit Offers';
+        submitBtn.innerText = 'Perbarui Offers';
         offerIdInput.value = offer.id;
         offerForm.querySelector('#name').value = offer.name;
         offerForm.querySelector('#url').value = offer.url;
@@ -435,7 +419,7 @@ try {
                 offerModal.style.display = 'none';
                 refreshOffersTable();
             } else {
-                let errorMessage = data.message || (isEditing ? 'Gagal memperbarui penawaran.' : 'Gagal menyimpan penawaran.');
+                let errorMessage = data.message || (isEditing ? 'Gagal memperbarui Offers.' : 'Gagal menyimpan Offers.');
                 if (data.errors) {
                     errorMessage += ': ' + Object.values(data.errors).flat().join(' ');
                 }
@@ -467,7 +451,7 @@ try {
                 showMessage('success', 'Berhasil', data.message);
                 refreshOffersTable();
             } else {
-                showMessage('error', 'Error', data.message || 'Gagal menghapus penawaran.');
+                showMessage('error', 'Error', data.message || 'Gagal menghapus Offers.');
             }
         } catch (error) {
             showMessage('error', 'Error', 'Terjadi kesalahan jaringan.');

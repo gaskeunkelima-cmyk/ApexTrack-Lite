@@ -14,48 +14,52 @@ $authToken = $_SESSION['auth_token'];
 <main class="p-6 md:p-10 lg:p-12 w-full font-sans">
     <h2 class="text-3xl font-bold text-gray-900 mb-6">Smartlink & Generator URL</h2>
     <div class="mx-auto bg-white p-8 rounded-xl shadow-lg">
-  
+ 
 
         <div id="status-message" class="hidden mb-4 p-4 text-center rounded-lg"></div>
 
         <form id="generator-form" enctype="multipart/form-data" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="offer" class="block text-sm font-medium text-gray-700">Penawaran</label>
-                    <select id="offer" name="offer" class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
-                </div>
-                <div>
-                    <label for="shared_domain" class="block text-sm font-medium text-gray-700">Domain Bersama</label>
-                    <select id="shared_domain" name="shared_domain" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
-                </div>
-                <div>
-                    <label for="redirect_type" class="block text-sm font-medium text-gray-700">Tipe Pengalihan</label>
-                    <select id="redirect_type" name="redirect_type" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
-                </div>
-                <div>
-                    <label for="type" class="block text-sm font-medium text-gray-700">Tipe Link</label>
-                    <select id="type" name="type" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
-                </div>
-                <div>
-                    <label for="generation_mode" class="block text-sm font-medium text-gray-700">Mode Pembuatan</label>
-                    <select id="generation_mode" name="generation_mode" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
-                </div>
-                <div id="shortener-choice-container" class="hidden">
-                    <label for="shortener_choice" class="block text-sm font-medium text-gray-700">Pilihan Pemendek URL Eksternal</label>
-                    <select id="shortener_choice" name="shortener_choice" class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
+            
+            <div class="border border-gray-300 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Pengaturan Dasar</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="offer" class="block text-sm font-medium text-gray-700">Penawaran</label>
+                        <select id="offer" name="offer" class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
+                    </div>
+                    <div>
+                        <label for="shared_domain" class="block text-sm font-medium text-gray-700">Domain Bersama</label>
+                        <select id="shared_domain" name="shared_domain" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
+                    </div>
+                    <div>
+                        <label for="redirect_type" class="block text-sm font-medium text-gray-700">Tipe Pengalihan</label>
+                        <select id="redirect_type" name="redirect_type" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
+                    </div>
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-700">Tipe Link</label>
+                        <select id="type" name="type" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
+                    </div>
+                    <div>
+                        <label for="generation_mode" class="block text-sm font-medium text-gray-700">Mode Pembuatan</label>
+                        <select id="generation_mode" name="generation_mode" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
+                    </div>
+                    <div id="shortener-choice-container" class="hidden">
+                        <label for="shortener_choice" class="block text-sm font-medium text-gray-700">Pilihan Pemendek URL Eksternal</label>
+                        <select id="shortener_choice" name="shortener_choice" class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
+                    </div>
                 </div>
             </div>
 
-            <div class="p-6 bg-gray-50 rounded-lg border border-gray-200">
+            <div class="border border-gray-300 p-6 rounded-lg">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">Informasi Meta</h3>
                 <div class="space-y-4">
                     <div>
                         <label for="meta_title" class="block text-sm font-medium text-gray-700">Meta Title</label>
-                        <input type="text" id="meta_title" name="meta_title" class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <input type="text" id="meta_title" name="meta_title" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     </div>
                     <div>
                         <label for="meta_description" class="block text-sm font-medium text-gray-700">Meta Description</label>
-                        <textarea id="meta_description" name="meta_description" rows="3" class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                        <textarea id="meta_description" name="meta_description" rows="3" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
                     </div>
                     <div>
                         <label for="og_image_file" class="block text-sm font-medium text-gray-700">Unggah Gambar OG (Open Graph)</label>
@@ -114,48 +118,91 @@ $authToken = $_SESSION['auth_token'];
         statusMessage.classList.remove('hidden');
     }
 
-  async function fetchFormData() {
-    try {
-        showStatus('Memuat data formulir...', 'info');
-        const response = await fetch(`${API_URL}/generator-data`, {
-            headers: {
-                'Authorization': `Bearer ${AUTH_TOKEN}`
+    async function fetchFormData() {
+        try {
+            showStatus('Memuat data formulir...', 'info');
+            const response = await fetch(`${API_URL}/generator-data`, {
+                headers: {
+                    'Authorization': `Bearer ${AUTH_TOKEN}`
+                }
+            });
+            const data = await response.json();
+            
+            if (!response.ok) {
+                let errorMessage = data.message || 'Gagal mengambil data formulir.';
+                if (response.status === 403) {
+                    errorMessage = 'Unauthorized action. Mohon login ulang.';
+                }
+                throw new Error(errorMessage);
             }
-        });
-        const data = await response.json();
-        
-        if (!response.ok) {
-            let errorMessage = data.message || 'Gagal mengambil data formulir.';
-            if (response.status === 403) {
-                errorMessage = 'Unauthorized action. Mohon login ulang.';
+            
+            // Populating other selects normally
+            populateSelect('offer', data.offers, 'Pilih Penawaran', 'id', 'name');
+            populateSelect('shared_domain', data.domains, 'Pilih Domain', null, null);
+            populateSelect('redirect_type', data.redirect_types, 'Pilih Tipe Pengalihan', null, null);
+
+            // Custom Population for 'type'
+            const typeSelect = document.getElementById('type');
+            const typeMapping = {
+                'render': 'Render Halaman',
+                'redirect': 'Redirect Langsung'
+            };
+
+            typeSelect.innerHTML = '';
+            const defaultTypeOption = document.createElement('option');
+            defaultTypeOption.textContent = 'Pilih Tipe Link';
+            defaultTypeOption.value = '';
+            typeSelect.appendChild(defaultTypeOption);
+            if (data.types) {
+                data.types.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = typeMapping[type] || type;
+                    typeSelect.appendChild(option);
+                });
             }
-            throw new Error(errorMessage);
+
+
+            // Custom Population for 'generation_mode'
+            const generationModeSelect = document.getElementById('generation_mode');
+            const generationModeMapping = {
+                'smartlink_external_self': 'Double Shortener',
+                'smartlink_self': 'Single Shortener',
+            };
+
+            generationModeSelect.innerHTML = '';
+            const defaultModeOption = document.createElement('option');
+            defaultModeOption.textContent = 'Pilih Mode Pembuatan';
+            defaultModeOption.value = '';
+            generationModeSelect.appendChild(defaultModeOption);
+            if (data.generation_modes) {
+                data.generation_modes.forEach(mode => {
+                    const option = document.createElement('option');
+                    option.value = mode;
+                    option.textContent = generationModeMapping[mode] || mode;
+                    generationModeSelect.appendChild(option);
+                });
+            }
+
+            // Memperbarui event listener agar memeriksa nilai yang benar
+            generationModeSelect.addEventListener('change', (e) => {
+                shortenerChoiceContainer.style.display = e.target.value === 'smartlink_external_self' ? 'block' : 'none';
+            });
+            generationModeSelect.dispatchEvent(new Event('change'));
+            
+            populateSelect('shortener_choice', data.shortener_choices, 'Pilih Pemendek URL', null, null);
+
+            showStatus('Data formulir berhasil dimuat.', 'success');
+            
+            setTimeout(() => {
+                statusMessage.classList.add('hidden');
+            }, 3000);
+
+        } catch (error) {
+            console.error('Kesalahan saat mengambil data formulir:', error);
+            showStatus(`Gagal mengambil data formulir: ${error.message}`, 'error');
         }
-        
-        populateSelect('offer', data.offers, 'Pilih Penawaran', 'id', 'name');
-        populateSelect('shared_domain', data.domains, 'Pilih Domain', null, null);
-        populateSelect('redirect_type', data.redirect_types, 'Pilih Tipe Pengalihan', null, null);
-        populateSelect('generation_mode', data.generation_modes, 'Pilih Mode Pembuatan', null, null);
-        populateSelect('shortener_choice', data.shortener_choices, 'Pilih Pemendek URL', null, null);
-        populateSelect('type', data.types, 'Pilih Tipe', null, null);
-
-        const generationModeSelect = document.getElementById('generation_mode');
-        generationModeSelect.addEventListener('change', (e) => {
-            shortenerChoiceContainer.style.display = e.target.value === 'smartlink_external_self' ? 'block' : 'none';
-        });
-        generationModeSelect.dispatchEvent(new Event('change'));
-
-        showStatus('Data formulir berhasil dimuat.', 'success');
-        
-        setTimeout(() => {
-            statusMessage.classList.add('hidden');
-        }, 3000);
-
-    } catch (error) {
-        console.error('Kesalahan saat mengambil data formulir:', error);
-        showStatus(`Kesalahan saat mengambil data formulir: ${error.message}`, 'error');
     }
-}
 
     function populateSelect(selectId, data, placeholder, valueKey, textKey) {
         const select = document.getElementById(selectId);

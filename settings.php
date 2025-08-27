@@ -9,7 +9,7 @@ $messageType = '';
 // Pengaturan pembaruan versi
 $versionFile = 'version.txt';
 $repoUrl = 'https://raw.githubusercontent.com/apextrack/ApexTrack-Lite/refs/heads/master/';
-$currentVersion = '1.0.1';
+$currentVersion = '1.2.1';
 
 if (file_exists($versionFile)) {
     $currentVersion = trim(file_get_contents($versionFile));
@@ -126,24 +126,6 @@ include 'layout/header.php';
         </div>
     <?php endif; ?>
 
-    <div class="text-center p-4 mb-4 rounded-lg bg-gray-100 text-gray-800">
-        <p class="font-semibold">Versi Aplikasi:</p>
-        <p>Versi saat ini: **<?php echo $currentVersion; ?>**</p>
-        <?php if ($updateAvailable): ?>
-            <p class="text-green-600 mt-2 font-bold"><?php echo $updateMessage; ?></p>
-            <button id="update-button" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
-                <i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang
-            </button>
-        <?php else: ?>
-            <p class="text-gray-500 mt-2">Anda menggunakan versi terbaru.</p>
-        <?php endif; ?>
-    </div>
-    
-    <div id="update-status" class="hidden text-center p-4 mb-4 rounded-lg bg-gray-200 text-gray-800">
-        <p class="font-semibold mb-2">Status Pembaruan:</p>
-        <div id="status-messages" class="text-left text-sm"></div>
-    </div>
-
     <form action="" method="POST" enctype="multipart/form-data" class="space-y-6 bg-white p-6 shadow-lg">
         <div>
             <label for="site_name" class="block text-sm font-medium text-gray-700">Nama Website</label>
@@ -167,6 +149,24 @@ include 'layout/header.php';
             Simpan Pengaturan
         </button>
     </form>
+    
+    <div class="text-center p-4 mb-4 rounded-lg bg-gray-100 text-gray-800">
+        <p class="font-semibold">Versi Aplikasi:</p>
+        <p>Versi saat ini: **<?php echo $currentVersion; ?>**</p>
+        <?php if ($updateAvailable): ?>
+            <p class="text-green-600 mt-2 font-bold"><?php echo $updateMessage; ?></p>
+            <button id="update-button" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                <i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang
+            </button>
+        <?php else: ?>
+            <p class="text-gray-500 mt-2">Anda menggunakan versi terbaru.</p>
+        <?php endif; ?>
+    </div>
+        
+    <div id="update-status" class="hidden text-center p-4 mb-4 rounded-lg bg-gray-200 text-gray-800">
+        <p class="font-semibold mb-2">Status Pembaruan:</p>
+        <div id="status-messages" class="text-left text-sm"></div>
+    </div>
 </main>
 
 <script>
