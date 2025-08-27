@@ -114,6 +114,17 @@ if ($latestVersionData !== false) {
     }
 }
 
+// Tampilkan pesan status pembaruan jika ada
+if (isset($_GET['update_status'])) {
+    if ($_GET['update_status'] === 'success') {
+        $message = 'Pembaruan berhasil! Halaman akan dimuat ulang.';
+        $messageType = 'success';
+    } else {
+        $message = 'Pembaruan gagal. Silakan coba lagi atau periksa log.';
+        $messageType = 'error';
+    }
+}
+
 include 'layout/header.php';
 ?>
 <main class="p-6 md:p-10 lg:p-12 w-full font-sans">
@@ -131,9 +142,11 @@ include 'layout/header.php';
         <p>Versi saat ini: **<?php echo $currentVersion; ?>**</p>
         <?php if ($updateAvailable): ?>
             <p class="text-green-600 mt-2 font-bold"><?php echo $updateMessage; ?></p>
-            <button id="update-button" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
-                <i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang
-            </button>
+            <form id="update-form" action="update.php" method="post">
+                <button type="submit" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                    <i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang
+                </button>
+            </form>
         <?php else: ?>
             <p class="text-gray-500 mt-2">Anda menggunakan versi terbaru.</p>
         <?php endif; ?>
@@ -163,36 +176,7 @@ include 'layout/header.php';
         </button>
     </form>
 </main>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const updateButton = document.getElementById('update-button');
 
-    if (updateButton) {
-        updateButton.addEventListener('click', function() {
-            this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memperbarui...';
-            
-            fetch('update.php')
-                .then(response => response.text())
-                .then(text => {
-                    alert(text);
-                    if (text.includes("Pembaruan berhasil!")) {
-                        window.location.reload();
-                    } else {
-                        this.disabled = false;
-                        this.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang';
-                    }
-                })
-                .catch(error => {
-                    alert('Terjadi kesalahan saat memperbarui.');
-                    console.error('Error:', error);
-                    this.disabled = false;
-                    this.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang';
-                });
-        });
-    }
-});
-</script>
 <?php
 include 'layout/footer.php';
 ?>

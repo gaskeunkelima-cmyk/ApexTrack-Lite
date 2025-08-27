@@ -1,45 +1,45 @@
 <?php
-// move_files.php
-$sourceDir = 'update_temp/ApexTrack-Lite-master/';
+// update.php
+$zipUrl = 'https://github.com/apextrack/ApexTrack-Lite/archive/refs/heads/master.zip';
+$zipFile = 'update.zip';
+$tempDir = 'update_temp/';
 
-if (!is_dir($sourceDir)) {
-    die("Error: Direktori sumber tidak ditemukan. Pembaruan gagal.\n");
+if (!class_exists('ZipArchive')) {
+    header('Location: settings.php?update_status=fail&reason=ZipArchive_missing');
+    exit;
 }
 
-echo "Memindahkan file dari folder sementara...\n";
+if (!is_dir($tempDir)) {
+    mkdir($tempDir, 0755, true);
+}
 
-// Fungsi untuk menyalin dan menghapus file secara rekursif
-function recursiveMove($src, $dst) {
-    $dir = opendir($src);
-    @mkdir($dst);
-    while (false !== ($file = readdir($dir))) {
-        if (($file != '.') && ($file != '..')) {
-            if (is_dir($src . '/' . $file)) {
-                recursiveMove($src . '/' . $file, $dst . '/' . $file);
-            } else {
-                copy($src . '/' . $file, $dst . '/' . $file);
-                unlink($src . '/' . $file);
-            }
-        }
+$zipContent = @file_get_contents($zipUrl);
+if ($zipContent === false) {
+    header('Location: settings.php?update_status=fail&reason=Download_failed');
+    exit;
+}
+
+if (file_put_contents($zipFile, $zipContent) === false) {
+    header('Location: settings.php?update_status=fail&reason=Save_failed');
+    exit;
+}
+
+$zip = new ZipArchive;
+if ($zip->open($zipFile) === true) {
+    if (!$zip->extractTo($tempDir)) {
+        $zip->close();
+        unlink($zipFile);
+        header('Location: settings.php?update_status=fail&reason=Extraction_failed');
+        exit;
     }
-    closedir($dir);
-    rmdir($src);
+    $zip->close();
+    unlink($zipFile);
+    
+    header('Location: move.php');
+    exit;
+} else {
+    unlink($zipFile);
+    header('Location: settings.php?update_status=fail&reason=Zip_corrupted');
+    exit;
 }
-
-// Pindahkan file ke direktori utama
-recursiveMove($sourceDir, './');
-
-// Hapus direktori sementara
-function rrmdir($dir) {
-    if (is_dir($dir)) {
-        $files = array_diff(scandir($dir), array('.', '..'));
-        foreach ($files as $file) {
-            (is_dir("$dir/$file")) ? rrmdir("$dir/$file") : unlink("$dir/$file");
-        }
-        return rmdir($dir);
-    }
-}
-rrmdir('update_temp/');
-
-echo "Pembaruan berhasil!\n";
 ?>
