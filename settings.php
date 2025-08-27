@@ -1,5 +1,5 @@
 <?php
-
+// ... kode yang sama di bagian atas ...
 $settingsFile = 'settings.json';
 $uploadsDir = 'uploads/';
 $allowedFileTypes = ['image/x-icon', 'image/vnd.microsoft.icon'];
@@ -7,12 +7,20 @@ $message = '';
 $messageType = '';
 
 // Pengaturan pembaruan versi
-$versionFile = 'version.txt';
-$repoUrl = 'https://raw.githubusercontent.com/apextrack/ApexTrack-Lite/refs/heads/master/';
-$currentVersion = '1.2.1';
+$versionFileUrl = 'https://raw.githubusercontent.com/apextrack/ApexTrack-Lite/master/version.txt';
+$repoOwner = 'apextrack'; 
+$repoName = 'ApexTrack-Lite'; 
+$latestVersionApiUrl = "https://api.github.com/repos/{$repoOwner}/{$repoName}/releases/latest";
 
-if (file_exists($versionFile)) {
-    $currentVersion = trim(file_get_contents($versionFile));
+$currentVersion = '1.2.0'; // Versi fallback jika gagal terhubung ke GitHub
+$context = stream_context_create([
+    'http' => ['header' => 'User-Agent: PHP-Script']
+]);
+
+// Ambil versi saat ini langsung dari file version.txt di GitHub
+$versionData = @file_get_contents($versionFileUrl, false, $context);
+if ($versionData !== false) {
+    $currentVersion = trim($versionData);
 }
 
 // Cek apakah direktori uploads ada, jika tidak, buat
@@ -96,18 +104,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Logika cek pembaruan
+// Logika cek pembaruan menggunakan API GitHub
 $latestVersion = null;
 $updateAvailable = false;
 $updateMessage = '';
-$context = stream_context_create([
-    'http' => ['header' => 'User-Agent: PHP-Script']
-]);
-$latestVersionUrl = $repoUrl . 'version.txt';
-$latestVersionData = @file_get_contents($latestVersionUrl, false, $context);
 
-if ($latestVersionData !== false) {
-    $latestVersion = trim($latestVersionData);
+// Ambil data rilis terbaru dari API GitHub
+$latestReleaseData = @file_get_contents($latestVersionApiUrl, false, $context);
+$latestRelease = $latestReleaseData ? json_decode($latestReleaseData, true) : null;
+
+if ($latestRelease && isset($latestRelease['tag_name'])) {
+    $latestVersion = ltrim($latestRelease['tag_name'], 'v');
     if (version_compare($latestVersion, $currentVersion, '>')) {
         $updateAvailable = true;
         $updateMessage = "Versi baru ({$latestVersion}) tersedia.";
