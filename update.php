@@ -35,6 +35,7 @@ if ($zip->open($zipFile) === true) {
     if (!$zip->extractTo($tempDir)) {
         $zip->close();
         unlink($zipFile);
+        
         die("Error: Gagal mengekstrak file ZIP.\n");
     }
     $zip->close();
@@ -46,7 +47,7 @@ if ($zip->open($zipFile) === true) {
     echo "Memulai proses pemindahan file...\n";
     
     // Alihkan ke skrip pemindahan untuk menyelesaikan pembaruan
-    echo "<script>window.location.href = 'move_files.php';</script>";
+    echo "<script>window.location.href = 'move.php';</script>";
 
 } else {
     echo "Error: Gagal membuka file ZIP yang diunduh.\n";
