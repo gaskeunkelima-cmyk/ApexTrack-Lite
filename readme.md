@@ -1,229 +1,350 @@
-<div align="left" style="position: relative;">
-<img src="https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/ec559a9f6bfd399b82bb44393651661b08aaf7ba/icons/folder-markdown-open.svg" align="right" width="30%" style="margin: -20px 0 0 20px;">
-<h1>APEXTRACK-LITE</h1>
+Dokumentasi API Lengkap
 
-<p align="left">
-	<img src="https://img.shields.io/github/license/apextrack/ApexTrack-Lite?style=flat&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
-	<img src="https://img.shields.io/github/last-commit/apextrack/ApexTrack-Lite?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
-	<img src="https://img.shields.io/github/languages/top/apextrack/ApexTrack-Lite?style=flat&color=0080ff" alt="repo-top-language">
-	<img src="https://img.shields.io/github/languages/count/apextrack/ApexTrack-Lite?style=flat&color=0080ff" alt="repo-language-count">
-</p>
-<p align="left">Built with the tools and technologies:</p>
-<p align="left">
-	<img src="https://img.shields.io/badge/PHP-777BB4.svg?style=flat&logo=PHP&logoColor=white" alt="PHP">
-</p>
-</div>
-<br clear="right">
+Dokumentasi ini adalah panduan komprehensif untuk mengintegrasikan aplikasi Anda dengan layanan backend Apextrack. Semua endpoint dirancang untuk efisiensi dan kemudahan penggunaan.
 
-<details><summary>Table of Contents</summary>
+Basis URL
 
-- [ Overview](#-overview)
-- [ Features](#-features)
-- [ Project Structure](#-project-structure)
-  - [ Project Index](#-project-index)
-- [ Getting Started](#-getting-started)
-  - [ Prerequisites](#-prerequisites)
-  - [ Installation](#-installation)
-  - [ Usage](#-usage)
-  - [ Testing](#-testing)
-- [ Project Roadmap](#-project-roadmap)
-- [ Contributing](#-contributing)
-- [ License](#-license)
-- [ Acknowledgments](#-acknowledgments)
+Semua permintaan API harus ditujukan ke URL dasar berikut:
 
-</details>
-<hr>
+https://www3.apextrack.site/api
+
+Autentikasi Menggunakan Sanctum Bearer Token
+
+Sebagian besar endpoint memerlukan autentikasi. Setelah berhasil login, Anda akan menerima token yang harus disertakan di header permintaan untuk semua rute yang dilindungi.
+
+Format Header Autentikasi:
+
+Authorization: Bearer <token_yang_diterima_saat_login>
 
 
+1. Modul Akun
 
-##  Project Structure
+1.1. Registrasi Akun Baru
 
-```sh
-└── ApexTrack-Lite/
-    ├── config.php
-    ├── dashboard.php
-    ├── generator.php
-    ├── index.php
-    ├── layout
-    │   ├── footer.php
-    │   └── header.php
-    ├── login.php
-    ├── logout.php
-    ├── offers.php
-    ├── profil.php
-    ├── readme.md
-    ├── reports.php
-    ├── settings.json
-    ├── settings.php
-    ├── uploads
-    │   └── d679be7aaa77450c61942d5fa7c9f68f.ico
-    └── user.php
-```
+Endpoint ini digunakan untuk mendaftarkan pengguna baru.
 
+URL: /register
 
-###  Project Index
-<details open>
-	<summary><b><code>APEXTRACK-LITE/</code></b></summary>
-	<details> <!-- __root__ Submodule -->
-		<summary><b>__root__</b></summary>
-		<blockquote>
-			<table>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/user.php'>user.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/generator.php'>generator.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/config.php'>config.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/dashboard.php'>dashboard.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/settings.json'>settings.json</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/index.php'>index.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/offers.php'>offers.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/profil.php'>profil.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/login.php'>login.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/logout.php'>logout.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/settings.php'>settings.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/reports.php'>reports.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			</table>
-		</blockquote>
-	</details>
-	<details> <!-- layout Submodule -->
-		<summary><b>layout</b></summary>
-		<blockquote>
-			<table>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/layout/header.php'>header.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/apextrack/ApexTrack-Lite/blob/master/layout/footer.php'>footer.php</a></b></td>
-				<td><code>❯ REPLACE-ME</code></td>
-			</tr>
-			</table>
-		</blockquote>
-	</details>
-</details>
+Metode: POST
 
----
-##  Getting Started
+Autentikasi: Tidak diperlukan.
 
-###  Prerequisites
+Body Permintaan: application/json
 
-Before getting started with ApexTrack-Lite, ensure your runtime environment meets the following requirements:
+Parameter
 
-- **Programming Language:** PHP
+Tipe
+
+Wajib
+
+Deskripsi
+
+name
+
+string
+
+Ya
+
+Nama pengguna.
+
+email
+
+string
+
+Ya
+
+Alamat email yang valid.
+
+password
+
+string
+
+Ya
+
+Kata sandi (minimal 8 karakter).
+
+password_confirmation
+
+string
+
+Ya
+
+Konfirmasi kata sandi.
+
+Contoh Permintaan (cURL):
+
+curl --location 'https://www3.apextrack.site/api/register' \
+--header 'Content-Type: application/json' \
+--data '{
+    "name": "nama_pengguna",
+    "email": "email_anda@contoh.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+}'
 
 
-###  Installation
+Contoh Respons Sukses (Status: 201 Created):
 
-Install ApexTrack-Lite using one of the following methods:
+{
+  "message": "Pendaftaran berhasil, silakan verifikasi email Anda."
+}
 
-**Build from source:**
 
-1. Clone the ApexTrack-Lite repository:
-```sh
-❯ git clone https://github.com/apextrack/ApexTrack-Lite
-```
+Contoh Respons Gagal (Status: 422 Unprocessable Entity):
 
-2. Move code to root folder :
-```sh
-❯ cd ApexTrack-Lite
-```
-```sh
-❯ mv * .[^.]* ..
-```
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "email": [
+      "The email has already been taken."
+    ],
+    "password": [
+      "The password confirmation does not match."
+    ]
+  }
+}
 
-##  Project Roadmap
 
-- [X] **`Task 1`**: <strike>Implement feature one.</strike>
-- [ ] **`Task 2`**: Implement feature two.
-- [ ] **`Task 3`**: Implement feature three.
+1.2. Login Pengguna
 
----
+Mengotentikasi pengguna dan mengembalikan token akses untuk sesi.
 
-##  Contributing
+URL: /login
 
-- **💬 [Join the Discussions](https://github.com/apextrack/ApexTrack-Lite/discussions)**: Share your insights, provide feedback, or ask questions.
-- **🐛 [Report Issues](https://github.com/apextrack/ApexTrack-Lite/issues)**: Submit bugs found or log feature requests for the `ApexTrack-Lite` project.
-- **💡 [Submit Pull Requests](https://github.com/apextrack/ApexTrack-Lite/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
+Metode: POST
 
-<details closed>
-<summary>Contributing Guidelines</summary>
+Autentikasi: Tidak diperlukan.
 
-1. **Fork the Repository**: Start by forking the project repository to your github account.
-2. **Clone Locally**: Clone the forked repository to your local machine using a git client.
-   ```sh
-   git clone https://github.com/apextrack/ApexTrack-Lite
-   ```
-3. **Create a New Branch**: Always work on a new branch, giving it a descriptive name.
-   ```sh
-   git checkout -b new-feature-x
-   ```
-4. **Make Your Changes**: Develop and test your changes locally.
-5. **Commit Your Changes**: Commit with a clear message describing your updates.
-   ```sh
-   git commit -m 'Implemented new feature x.'
-   ```
-6. **Push to github**: Push the changes to your forked repository.
-   ```sh
-   git push origin new-feature-x
-   ```
-7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
-8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
-</details>
+Body Permintaan: application/json
 
-<details closed>
-<summary>Contributor Graph</summary>
-<br>
-<p align="left">
-   <a href="https://github.com{/apextrack/ApexTrack-Lite/}graphs/contributors">
-      <img src="https://contrib.rocks/image?repo=apextrack/ApexTrack-Lite">
-   </a>
-</p>
-</details>
+Parameter
 
----
+Tipe
 
-##  License
+Wajib
 
-This project is protected under the [SELECT-A-LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
+Deskripsi
 
----
+email
 
-##  Acknowledgments
+string
 
-- List any resources, contributors, inspiration, etc. here.
+Ya
 
----
+Alamat email pengguna.
+
+password
+
+string
+
+Ya
+
+Kata sandi pengguna.
+
+device_name
+
+string
+
+Ya
+
+Nama perangkat (misalnya, "mobile_app" atau "web_browser").
+
+Contoh Permintaan (cURL):
+
+curl --location 'https://www3.apextrack.site/api/login' \
+--header 'Content-Type: application/json' \
+--data '{
+    "email": "email_anda@contoh.com",
+    "password": "password123",
+    "device_name": "mobile_app"
+}'
+
+
+Contoh Respons Sukses (Status: 200 OK):
+
+{
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john.doe@example.com"
+  },
+  "token": "1|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+
+1.3. Logout
+
+Menghapus token autentikasi pengguna saat ini.
+
+URL: /logout
+
+Metode: POST
+
+Autentikasi: Wajib (Bearer Token).
+
+Contoh Permintaan (cURL):
+
+curl --location 'https://www3.apextrack.site/api/logout' \
+--header 'Authorization: Bearer 1|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+
+
+Contoh Respons Sukses (Status: 200 OK):
+
+{
+  "message": "Berhasil logout."
+}
+
+
+2. Modul Verifikasi Email
+
+Endpoint ini digunakan untuk memverifikasi alamat email pengguna.
+
+2.1. Verifikasi Kode
+
+URL: /email/verify
+
+Metode: POST
+
+Autentikasi: Wajib (Bearer Token).
+
+Body Permintaan: application/json
+
+Parameter
+
+Tipe
+
+Wajib
+
+Deskripsi
+
+code
+
+string
+
+Ya
+
+Kode verifikasi 6 digit yang dikirim ke email.
+
+Contoh Respons Sukses (Status: 200 OK):
+
+{
+  "message": "Email Anda berhasil diverifikasi!",
+  "redirect": "/dashboard"
+}
+
+
+Contoh Respons Gagal (Status: 422 Unprocessable Entity):
+
+{
+  "message": "Kode verifikasi tidak valid atau sudah kadaluarsa."
+}
+
+
+2.2. Kirim Ulang Kode
+
+URL: /email/resend
+
+Metode: POST
+
+Autentikasi: Wajib (Bearer Token).
+
+Contoh Respons Sukses (Status: 200 OK):
+
+{
+  "message": "Kode verifikasi baru telah dikirim ke email Anda."
+}
+
+
+Contoh Respons Gagal (Status: 429 Too Many Requests):
+
+{
+  "message": "Harap tunggu 1 menit sebelum mencoba mengirim ulang kode.",
+  "retry_after": 60
+}
+
+
+3. Modul Dashboard & Laporan
+
+3.1. Mendapatkan Data Pengguna
+
+Mengambil detail profil pengguna yang terautentikasi.
+
+URL: /user
+
+Metode: GET
+
+Autentikasi: Wajib (Bearer Token).
+
+Contoh Respons Sukses (Status: 200 OK):
+
+{
+  "id": 1,
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "email_verified_at": "2024-08-17T08:05:00.000000Z",
+  "account_status": "active"
+}
+
+
+3.2. Mendapatkan Semua Statistik Dashboard
+
+Endpoint tunggal ini mengembalikan semua data dashboard yang diperlukan (ringkasan, laporan, klik, dan leads terbaru) dalam satu respons yang efisien.
+
+URL: /dashboard-data
+
+Metode: GET
+
+Autentikasi: Wajib (Bearer Token).
+
+Contoh Respons Sukses (Status: 200 OK):
+
+{
+  "summary": {
+    "liveClicksLast30Seconds": 15,
+    "clicksToday": 1500,
+    "totalLeads": 250,
+    "totalPayout": 1250.75
+  },
+  "report": [
+    {
+      "sub_id": "user123",
+      "clicks": 500,
+      "leads": 100,
+      "approved_leads": 80,
+      "total_payout": 400.50,
+      "cr": 16.0
+    }
+  ],
+  "recent_clicks": [
+    {
+      "clickid": "c_20240817080000",
+      "country_code": "ID",
+      "device_type": "mobile",
+      "created_at": "2024-08-17T08:00:00.000000Z"
+    }
+  ],
+  "recent_leads": [
+    {
+      "status": "approved",
+      "payout": 5.00,
+      "created_at": "2024-08-17T08:05:00.000000Z",
+      "sub_id": "user123",
+      "country_code": "ID"
+    }
+  ]
+}
+
+
+4. Modul Notifikasi Pembayaran & Postback (Rute Publik)
+
+Rute-rute ini tidak memerlukan otentikasi Bearer Token karena digunakan untuk komunikasi antar server.
+
+4.2. URL Postback Konversi
+
+Endpoint untuk menerima postback konversi dari layanan lain.
+
+URL: /postback/conversion
+
+Metode: GET atau POST
+
+Autentikasi: Tidak diperlukan.
