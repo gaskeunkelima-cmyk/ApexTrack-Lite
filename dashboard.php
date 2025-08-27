@@ -64,16 +64,15 @@ try {
     header('Location: login.php?error=' . urlencode($e->getMessage()));
     exit();
 }
-
 ?>
 
-<div class="p-6 md:p-10 lg:p-12 w-full font-sans">
+<main class="p-6 md:p-10 lg:p-12 w-full font-sans">
     <h2 class="text-3xl font-bold text-gray-900 mb-6">Dashboard</h2>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <div class="card flex flex-col items-start bg-blue-100 text-blue-800 border-l-4 border-blue-500 p-4 rounded-lg shadow-md">
             <div class="flex items-center mb-1">
-                <i data-lucide="line-chart" class="w-5 h-5 mr-2"></i>
+                <i class="fa-solid fa-chart-line w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">Clicks Today</h3>
             </div>
             <div class="text-2xl font-bold">
@@ -83,7 +82,7 @@ try {
         
         <div class="card flex flex-col items-start bg-purple-100 text-purple-800 border-l-4 border-purple-500 p-4 rounded-lg shadow-md">
             <div class="flex items-center mb-1">
-                <i data-lucide="user-check" class="w-5 h-5 mr-2"></i>
+                <i class="fa-solid fa-user-check w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">Conversions Today</h3>
             </div>
             <div class="text-2xl font-bold">
@@ -93,7 +92,7 @@ try {
         
         <div class="card flex flex-col items-start bg-orange-100 text-orange-800 border-l-4 border-orange-500 p-4 rounded-lg shadow-md">
             <div class="flex items-center mb-1">
-                <i data-lucide="dollar-sign" class="w-5 h-5 mr-2"></i>
+                <i class="fa-solid fa-dollar-sign w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">Revenue Today</h3>
             </div>
             <div class="text-2xl font-bold">
@@ -103,7 +102,7 @@ try {
         
         <div class="card flex flex-col items-start bg-green-100 text-green-800 border-l-4 border-green-500 p-4 rounded-lg shadow-md">
             <div class="flex items-center mb-1">
-                <i data-lucide="trending-up" class="w-5 h-5 mr-2"></i>
+                <i class="fa-solid fa-arrow-trend-up w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">EPC Today</h3>
             </div>
             <div class="text-2xl font-bold">
@@ -134,12 +133,50 @@ try {
                     <?php if (!empty($recentClicks)): ?>
                         <?php foreach ($recentClicks as $click): ?>
                             <tr>
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['sub_id'] ?? 'N/A'); ?></td>
+                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
+                                    <div class="flex items-center">
+                                        <i class="fa-solid fa-user w-4 h-4 mr-2"></i>
+                                        <?php echo htmlspecialchars($click['sub_id'] ?? 'N/A'); ?>
+                                    </div>
+                                </td>
                                 <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['offer_name'] ?? 'N/A'); ?></td>
                                 <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['ip_address'] ?? 'N/A'); ?></td>
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['country_code'] ?? 'N/A'); ?></td>
+                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
+                                    <div class="flex items-center">
+                                        <?php 
+                                            $countryCode = strtolower($click['country_code'] ?? 'us'); // Default ke 'us'
+                                            // Beberapa kode negara memiliki mapping berbeda di flag-icon-css
+                                            // Contoh: UK -> gb, US -> us (sudah sesuai)
+                                            if ($countryCode === 'uk') $countryCode = 'gb';
+                                            // Tambahkan mapping lain jika diperlukan
+                                        ?>
+                                        <span class="flag-icon flag-icon-<?php echo htmlspecialchars($countryCode); ?> mr-2"></span>
+                                        <?php echo htmlspecialchars($click['country_code'] ?? 'N/A'); ?>
+                                    </div>
+                                </td>
                                 <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['os'] ?? 'N/A'); ?></td>
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['device_type'] ?? 'N/A'); ?></td>
+                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
+                                    <div class="flex items-center">
+                                        <?php 
+                                            $deviceIcon = 'fa-mobile-screen-button';
+                                            if (isset($click['device_type'])) {
+                                                switch (strtolower($click['device_type'])) {
+                                                    case 'desktop':
+                                                        $deviceIcon = 'fa-desktop';
+                                                        break;
+                                                    case 'tablet':
+                                                        $deviceIcon = 'fa-tablet';
+                                                        break;
+                                                    default: // 'mobile' atau lainnya
+                                                        $deviceIcon = 'fa-mobile-screen-button';
+                                                        break;
+                                                }
+                                            }
+                                        ?>
+                                        <i class="fa-solid <?php echo $deviceIcon; ?> w-4 h-4 mr-2"></i>
+                                        <?php echo htmlspecialchars($click['device_type'] ?? 'N/A'); ?>
+                                    </div>
+                                </td>
                                 <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['redirect_type_used'] ?? 'N/A'); ?></td> 
                                 <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars(date('d/m/Y H:i:s', strtotime($click['created_at']))); ?></td>
                             </tr>
@@ -175,7 +212,12 @@ try {
                         <?php if (!empty($performanceReport)): ?>
                             <?php foreach ($performanceReport as $report): ?>
                                 <tr>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($report['sub_id'] ?? 'N/A'); ?></td>
+                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
+                                        <div class="flex items-center">
+                                            <i class="fa-solid fa-user w-4 h-4 mr-2"></i>
+                                            <?php echo htmlspecialchars($report['sub_id'] ?? 'N/A'); ?>
+                                        </div>
+                                    </td>
                                     <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars(number_format($report['hits'] ?? 0)); ?></td>
                                     <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars(number_format($report['conversions'] ?? 0)); ?></td>
                                     <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">$<?php echo htmlspecialchars(number_format($report['revenue'] ?? 0, 2)); ?></td>
@@ -213,10 +255,45 @@ try {
                         <?php if (!empty($recentLeads)): ?>
                             <?php foreach ($recentLeads as $lead): ?>
                                 <tr>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($lead['sub_id'] ?? 'N/A'); ?></td>
+                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
+                                        <div class="flex items-center">
+                                            <i class="fa-solid fa-user w-4 h-4 mr-2"></i>
+                                            <?php echo htmlspecialchars($lead['sub_id'] ?? 'N/A'); ?>
+                                        </div>
+                                    </td>
                                     <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">$<?php echo htmlspecialchars(number_format($lead['payout'] ?? 0, 2)); ?></td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($lead['country_code'] ?? 'N/A'); ?></td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($lead['device_type'] ?? 'N/A'); ?></td>
+                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
+                                        <div class="flex items-center">
+                                            <?php 
+                                                $countryCode = strtolower($lead['country_code'] ?? 'us'); // Default ke 'us'
+                                                if ($countryCode === 'uk') $countryCode = 'gb';
+                                            ?>
+                                            <span class="flag-icon flag-icon-<?php echo htmlspecialchars($countryCode); ?> mr-2"></span>
+                                            <?php echo htmlspecialchars($lead['country_code'] ?? 'N/A'); ?>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
+                                        <div class="flex items-center">
+                                            <?php
+                                                $deviceIcon = 'fa-mobile-screen-button';
+                                                if (isset($lead['device_type'])) {
+                                                    switch (strtolower($lead['device_type'])) {
+                                                        case 'desktop':
+                                                            $deviceIcon = 'fa-desktop';
+                                                            break;
+                                                        case 'tablet':
+                                                            $deviceIcon = 'fa-tablet';
+                                                            break;
+                                                        default:
+                                                            $deviceIcon = 'fa-mobile-screen-button';
+                                                            break;
+                                                    }
+                                                }
+                                            ?>
+                                            <i class="fa-solid <?php echo $deviceIcon; ?> w-4 h-4 mr-2"></i>
+                                            <?php echo htmlspecialchars($lead['device_type'] ?? 'N/A'); ?>
+                                        </div>
+                                    </td>
                                     <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($lead['ip_address'] ?? 'N/A'); ?></td>
                                     <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars(date('d/m/Y H:i:s', strtotime($lead['created_at']))); ?></td>
                                 </tr>
@@ -232,6 +309,9 @@ try {
         </div>
     </div>
 </div>
+</main>
+
+
 <?php
 include 'layout/footer.php';
 ?>
