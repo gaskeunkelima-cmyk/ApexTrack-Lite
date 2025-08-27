@@ -9,7 +9,7 @@ $messageType = '';
 // Pengaturan pembaruan versi
 $versionFile = 'version.txt';
 $repoUrl = 'https://raw.githubusercontent.com/apextrack/ApexTrack-Lite/refs/heads/master/';
-$currentVersion = '1.0.1'; // Versi awal jika file tidak ada
+$currentVersion = '1.0.1';
 
 if (file_exists($versionFile)) {
     $currentVersion = trim(file_get_contents($versionFile));
@@ -114,17 +114,6 @@ if ($latestVersionData !== false) {
     }
 }
 
-// Tampilkan pesan status pembaruan jika ada
-if (isset($_GET['update_status'])) {
-    if ($_GET['update_status'] === 'success') {
-        $message = 'Pembaruan berhasil! Halaman akan dimuat ulang.';
-        $messageType = 'success';
-    } else {
-        $message = 'Pembaruan gagal. Silakan coba lagi atau periksa log.';
-        $messageType = 'error';
-    }
-}
-
 include 'layout/header.php';
 ?>
 <main class="p-6 md:p-10 lg:p-12 w-full font-sans">
@@ -142,14 +131,17 @@ include 'layout/header.php';
         <p>Versi saat ini: **<?php echo $currentVersion; ?>**</p>
         <?php if ($updateAvailable): ?>
             <p class="text-green-600 mt-2 font-bold"><?php echo $updateMessage; ?></p>
-            <form id="update-form" action="update.php" method="post">
-                <button type="submit" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
-                    <i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang
-                </button>
-            </form>
+            <button id="update-button" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                <i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang
+            </button>
         <?php else: ?>
             <p class="text-gray-500 mt-2">Anda menggunakan versi terbaru.</p>
         <?php endif; ?>
+    </div>
+    
+    <div id="update-status" class="hidden text-center p-4 mb-4 rounded-lg bg-gray-200 text-gray-800">
+        <p class="font-semibold mb-2">Status Pembaruan:</p>
+        <div id="status-messages" class="text-left text-sm"></div>
     </div>
 
     <form action="" method="POST" enctype="multipart/form-data" class="space-y-6 bg-white p-6 shadow-lg">
@@ -177,6 +169,42 @@ include 'layout/header.php';
     </form>
 </main>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const updateButton = document.getElementById('update-button');
+    const updateStatusContainer = document.getElementById('update-status');
+    const statusMessages = document.getElementById('status-messages');
+
+    if (updateButton) {
+        updateButton.addEventListener('click', () => {
+            updateButton.disabled = true;
+            updateButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memulai...';
+            updateStatusContainer.classList.remove('hidden');
+            statusMessages.innerHTML = ''; // Clear previous messages
+
+            // Use fetch to start the update process
+            fetch('update.php')
+                .then(response => response.text())
+                .then(text => {
+                    statusMessages.innerHTML = text;
+                    if (text.includes("Pembaruan berhasil!")) {
+                        // Reload page after a short delay to show the new version number
+                        setTimeout(() => window.location.reload(), 2000);
+                    } else {
+                        updateButton.disabled = false;
+                        updateButton.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang';
+                    }
+                })
+                .catch(error => {
+                    statusMessages.innerHTML = '<p class="text-red-600">Terjadi kesalahan. Pembaruan gagal.</p>';
+                    console.error('Error:', error);
+                    updateButton.disabled = false;
+                    updateButton.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Perbarui Sekarang';
+                });
+        });
+    }
+});
+</script>
 <?php
 include 'layout/footer.php';
 ?>
