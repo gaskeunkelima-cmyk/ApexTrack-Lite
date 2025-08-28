@@ -12,7 +12,7 @@ $repoOwner = 'apextrack';
 $repoName = 'ApexTrack-Lite'; 
 $latestVersionApiUrl = "https://api.github.com/repos/{$repoOwner}/{$repoName}/releases/latest";
 
-$currentVersion = '1.2.0'; // Versi fallback jika gagal terhubung ke GitHub
+$currentVersion = '1.2.1'; // Versi fallback jika gagal terhubung ke GitHub
 $context = stream_context_create([
     'http' => ['header' => 'User-Agent: PHP-Script']
 ]);

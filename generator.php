@@ -9,17 +9,17 @@ if (!isset($_SESSION['auth_token'])) {
 
 $authToken = $_SESSION['auth_token'];
 
+// Token App untuk scraping, ditaruh di sini agar tidak terlihat oleh pengguna
+$appAccessToken = '1308899767242947|HVu-8GkDtyPmpAR2SQOAx2BT2bg';
+
 ?>
 
 <main class="p-6 md:p-10 lg:p-12 w-full font-sans">
     <h2 class="text-3xl font-bold text-gray-900 mb-6">Smartlink Generator</h2>
     <div class="mx-auto bg-white p-8 shadow-lg">
- 
-
         <div id="status-message" class="hidden mb-4 p-4 text-center rounded-lg"></div>
 
         <form id="generator-form" enctype="multipart/form-data" class="space-y-6">
-            
             <div class="border border-gray-300 p-6 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -70,7 +70,6 @@ $authToken = $_SESSION['auth_token'];
                     </div>
                 </div>
             </div>
-
             <button type="submit" class="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out">
                 Generate Smartlink
             </button>
@@ -88,6 +87,16 @@ $authToken = $_SESSION['auth_token'];
                     <a id="first-shortened-url-link" href="#" target="_blank" class="text-blue-600 font-semibold break-all hover:underline"></a>
                 </div>
             </div>
+            <div id="scraping-log" class="hidden mt-4 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <h4 class="text-md font-semibold text-gray-800 mb-2">Log Scraping Facebook</h4>
+                <div id="log-content">
+                    <p id="log-message" class="text-gray-600"></p>
+                    <pre id="log-details" class="bg-gray-100 p-2 text-sm text-gray-700 rounded overflow-auto mt-2"></pre>
+                    <button id="scrape-again-button" class="hidden mt-4 w-full py-2 px-4 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 ease-in-out">
+                        Scrape Ulang
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </main>
@@ -95,6 +104,7 @@ $authToken = $_SESSION['auth_token'];
 <script>
     const API_URL = '<?php echo BASE_API_URL; ?>';
     const AUTH_TOKEN = '<?php echo $authToken; ?>';
+    const FACEBOOK_ACCESS_TOKEN = '<?php echo $appAccessToken; ?>';
 
     const form = document.getElementById('generator-form');
     const statusMessage = document.getElementById('status-message');
@@ -103,6 +113,10 @@ $authToken = $_SESSION['auth_token'];
     const firstShortenedUrlContainer = document.getElementById('first-shortened-url-container');
     const firstShortenedUrlLink = document.getElementById('first-shortened-url-link');
     const shortenerChoiceContainer = document.getElementById('shortener-choice-container');
+    const scrapingLog = document.getElementById('scraping-log');
+    const logMessage = document.getElementById('log-message');
+    const logDetails = document.getElementById('log-details');
+    const scrapeAgainButton = document.getElementById('scrape-again-button');
 
     function showStatus(message, type) {
         statusMessage.innerHTML = message;
@@ -121,9 +135,7 @@ $authToken = $_SESSION['auth_token'];
         try {
             showStatus('Memuat data formulir...', 'info');
             const response = await fetch(`${API_URL}/generator-data`, {
-                headers: {
-                    'Authorization': `Bearer ${AUTH_TOKEN}`
-                }
+                headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
             });
             const data = await response.json();
             
@@ -135,18 +147,12 @@ $authToken = $_SESSION['auth_token'];
                 throw new Error(errorMessage);
             }
             
-            // Populating other selects normally
             populateSelect('offer', data.offers, 'Offers', 'id', 'name');
             populateSelect('shared_domain', data.domains, 'Domain', null, null);
             populateSelect('redirect_type', data.redirect_types, 'Redirect', null, null);
-
-            // Custom Population for 'type'
+            
             const typeSelect = document.getElementById('type');
-            const typeMapping = {
-                'render': 'Render Halaman',
-                'redirect': 'Redirect Langsung'
-            };
-
+            const typeMapping = { 'render': 'Render Halaman', 'redirect': 'Redirect Langsung' };
             typeSelect.innerHTML = '';
             const defaultTypeOption = document.createElement('option');
             defaultTypeOption.textContent = 'Smartlink';
@@ -161,14 +167,8 @@ $authToken = $_SESSION['auth_token'];
                 });
             }
 
-
-            // Custom Population for 'generation_mode'
             const generationModeSelect = document.getElementById('generation_mode');
-            const generationModeMapping = {
-                'smartlink_external_self': 'Double Shortener',
-                'smartlink_self': 'Single Shortener',
-            };
-
+            const generationModeMapping = { 'smartlink_external_self': 'Double Shortener', 'smartlink_self': 'Single Shortener' };
             generationModeSelect.innerHTML = '';
             const defaultModeOption = document.createElement('option');
             defaultModeOption.textContent = 'Mode';
@@ -182,21 +182,13 @@ $authToken = $_SESSION['auth_token'];
                     generationModeSelect.appendChild(option);
                 });
             }
-
-            // Memperbarui event listener agar memeriksa nilai yang benar
             generationModeSelect.addEventListener('change', (e) => {
                 shortenerChoiceContainer.style.display = e.target.value === 'smartlink_external_self' ? 'block' : 'none';
             });
             generationModeSelect.dispatchEvent(new Event('change'));
-            
             populateSelect('shortener_choice', data.shortener_choices, 'Shortner', null, null);
-
             showStatus('Data formulir berhasil dimuat.', 'success');
-            
-            setTimeout(() => {
-                statusMessage.classList.add('hidden');
-            }, 3000);
-
+            setTimeout(() => { statusMessage.classList.add('hidden'); }, 3000);
         } catch (error) {
             console.error('Kesalahan saat mengambil data formulir:', error);
             showStatus(`Gagal mengambil data formulir: ${error.message}`, 'error');
@@ -220,9 +212,49 @@ $authToken = $_SESSION['auth_token'];
         }
     }
 
+    async function performScraping(url) {
+        showStatus('Memulai scraping Facebook Graph API...', 'info');
+        scrapingLog.classList.remove('hidden');
+        logMessage.textContent = 'Mengirim permintaan scraping...';
+        logDetails.textContent = '...';
+        scrapeAgainButton.classList.add('hidden');
+
+        try {
+            const scrapingData = new FormData();
+            scrapingData.append('url', url);
+            scrapingData.append('access_token', FACEBOOK_ACCESS_TOKEN);
+
+            const scrapeResponse = await fetch('scrape_proxy.php', {
+                method: 'POST',
+                body: scrapingData
+            });
+
+            const scrapeResult = await scrapeResponse.json();
+
+            if (scrapeResult.error) {
+                logMessage.textContent = '❌ Scraping Gagal!';
+                logDetails.textContent = JSON.stringify(scrapeResult.error, null, 2);
+                scrapeAgainButton.classList.remove('hidden');
+                showStatus('Scraping Gagal: ' + scrapeResult.error.message, 'error');
+            } else {
+                logMessage.textContent = '✅ Scraping Berhasil!';
+                logDetails.textContent = JSON.stringify(scrapeResult, null, 2);
+                showStatus('Scraping berhasil! Log meta tags ada di bawah.', 'success');
+            }
+        } catch (scrapeError) {
+            logMessage.textContent = '❌ Kesalahan saat memicu scraping.';
+            logDetails.textContent = scrapeError.message;
+            scrapeAgainButton.classList.remove('hidden');
+            console.error('Kesalahan saat memicu scraping:', scrapeError);
+            showStatus('Gagal memicu scraping: ' + scrapeError.message, 'error');
+        }
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         showStatus('Sedang memproses...', 'info');
+        resultSection.classList.add('hidden');
+        scrapingLog.classList.add('hidden');
 
         const formData = new FormData(form);
         const generationMode = formData.get('generation_mode');
@@ -260,10 +292,24 @@ $authToken = $_SESSION['auth_token'];
             } else {
                 firstShortenedUrlContainer.classList.add('hidden');
             }
+
+            // Panggil fungsi scraping setelah URL dibuat
+            await performScraping(data.final_shared_url);
+            
         } catch (error) {
             console.error('Kesalahan saat membuat URL:', error);
             showStatus(`Gagal membuat URL: ${error.message}`, 'error');
             resultSection.classList.add('hidden');
+        }
+    });
+
+    // Event listener untuk tombol 'Scrape Ulang'
+    scrapeAgainButton.addEventListener('click', () => {
+        const urlToScrape = finalUrlLink.href;
+        if (urlToScrape && urlToScrape !== '#') {
+            performScraping(urlToScrape);
+        } else {
+            showStatus('URL tidak ditemukan untuk scraping ulang.', 'error');
         }
     });
 
