@@ -2,7 +2,18 @@
 session_start();
 
 require_once 'config.php';
+$settingsFile = 'settings.json';
+$siteName = '';
+$faviconUrl = '';
 
+if (file_exists($settingsFile)) {
+    $settingsData = file_get_contents($settingsFile);
+    $settings = json_decode($settingsData, true);
+    if ($settings) {
+        $siteName = htmlspecialchars($settings['site_name'] ?? 'Default Site Name');
+        $faviconUrl = htmlspecialchars($settings['favicon_url'] ?? '');
+    }
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['email']) || !isset($_POST['password'])) {
         $errorMessage = 'Email dan kata sandi harus diisi.';
@@ -53,46 +64,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title><?php echo $siteName; ?></title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; }
-        .login-container { background-color: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px; }
-        h2 { text-align: center; color: #333; }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; color: #555; }
-        input[type="email"], input[type="password"] { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 0.75rem; border: none; border-radius: 4px; background-color: #007bff; color: #fff; font-size: 1rem; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        .message { text-align: center; margin-top: 1rem; font-size: 0.9rem; }
-        .message.error { color: #dc3545; }
-        .message.success { color: #28a745; }
-        .link-register { display: block; text-align: center; margin-top: 1rem; color: #007bff; text-decoration: none; }
+        body { font-family: sans-serif; }
     </style>
 </head>
-<body>
-    <div class="login-container">
-        <h2>Login</h2>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 shadow-xl w-full max-w-md">
+        <h2 class="text-3xl font-bold text-center text-gray-900 mb-6">
+            <?php echo $siteName; ?>
+        </h2>
         <?php 
         if (isset($errorMessage)): ?>
-            <p class="message error"><?php echo htmlspecialchars($errorMessage); ?></p>
+            <p class="text-red-500 text-sm text-center mb-4"><?php echo htmlspecialchars($errorMessage); ?></p>
         <?php elseif (isset($_GET['error'])): ?>
-            <p class="message error"><?php echo htmlspecialchars($_GET['error']); ?></p>
+            <p class="text-red-500 text-sm text-center mb-4"><?php echo htmlspecialchars($_GET['error']); ?></p>
         <?php endif; ?>
         <?php if (isset($_GET['message'])): ?>
-            <p class="message success"><?php echo htmlspecialchars($_GET['message']); ?></p>
+            <p class="text-green-500 text-sm text-center mb-4"><?php echo htmlspecialchars($_GET['message']); ?></p>
         <?php endif; ?>
         <form action="" method="POST">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email</label>
+                <input type="email" id="email" name="email" class="w-full px-4 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
-            <div class="form-group">
-                <label for="password">Kata Sandi</label>
-                <input type="password" id="password" name="password" required>
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700 text-sm font-medium mb-2">Kata Sandi</label>
+                <input type="password" id="password" name="password" class="w-full px-4 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
-            <button type="submit">Login</button>
+            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Login
+            </button>
         </form>
-        <a href="https://apextrack.site" class="link-register" target="_blank">Belum punya akun? Daftar di sini.</a>
     </div>
 </body>
 </html>

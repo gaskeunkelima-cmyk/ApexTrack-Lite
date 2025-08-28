@@ -70,7 +70,7 @@ try {
     <h2 class="text-3xl font-bold text-gray-900 mb-6">Dashboard</h2>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div class="card flex flex-col items-start bg-blue-100 text-blue-800 border-l-4 border-blue-500 p-4 rounded-lg shadow-md">
+        <div class="card flex flex-col items-start bg-blue-100 text-blue-800 border-l-4 border-blue-500 p-4 shadow-md">
             <div class="flex items-center mb-1">
                 <i class="fa-solid fa-chart-line w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">Clicks Today</h3>
@@ -80,7 +80,7 @@ try {
             </div>
         </div>
         
-        <div class="card flex flex-col items-start bg-purple-100 text-purple-800 border-l-4 border-purple-500 p-4 rounded-lg shadow-md">
+        <div class="card flex flex-col items-start bg-purple-100 text-purple-800 border-l-4 border-purple-500 p-4 shadow-md">
             <div class="flex items-center mb-1">
                 <i class="fa-solid fa-user-check w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">Conversions Today</h3>
@@ -90,7 +90,7 @@ try {
             </div>
         </div>
         
-        <div class="card flex flex-col items-start bg-orange-100 text-orange-800 border-l-4 border-orange-500 p-4 rounded-lg shadow-md">
+        <div class="card flex flex-col items-start bg-orange-100 text-orange-800 border-l-4 border-orange-500 p-4 shadow-md">
             <div class="flex items-center mb-1">
                 <i class="fa-solid fa-dollar-sign w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">Revenue Today</h3>
@@ -100,7 +100,7 @@ try {
             </div>
         </div>
         
-        <div class="card flex flex-col items-start bg-green-100 text-green-800 border-l-4 border-green-500 p-4 rounded-lg shadow-md">
+        <div class="card flex flex-col items-start bg-green-100 text-green-800 border-l-4 border-green-500 p-4 shadow-md">
             <div class="flex items-center mb-1">
                 <i class="fa-solid fa-arrow-trend-up w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">EPC Today</h3>

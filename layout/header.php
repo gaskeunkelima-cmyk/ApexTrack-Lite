@@ -141,16 +141,16 @@ if (file_exists($settingsFile)) {
                 <?php endif; ?>
             </div>
             
-            <div class="relative">
-                <button id="profile-dropdown-button" class="flex items-center space-x-2 text-gray-800 focus:outline-none">
-                    <i data-lucide="user-circle" class="w-8 h-8 rounded-full"></i>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-600"></i>
-                </button>
-                <div id="profile-dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg hidden">
-                    <a href="profil.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
-                    <a href="logout.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
-                </div>
-            </div>
+<div class="relative">
+    <button id="profile-dropdown-button" class="flex items-center space-x-2 text-gray-800 focus:outline-none">
+        <img src="uploads/user.webp" alt="User Profile" class="w-10 h-10 rounded-full border-2 border-transparent hover:border-blue-500 transition-colors">
+    </button>
+    <div id="profile-dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg hidden">
+        <a href="profil.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
+        <a href="logout.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
+    </div>
+</div>
+
         </div>
 
         <button id="menu-button" class="md:hidden text-gray-800">

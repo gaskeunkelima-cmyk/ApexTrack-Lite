@@ -8,27 +8,27 @@ $apiURL = BASE_API_URL;
 ?>
 
 <main class="flex-grow p-6 md:p-10 lg:p-12">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6">Manajemen Pengguna</h2>
-    <div class="mx-auto bg-white p-8 rounded-xl shadow-lg">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Manajemen Users</h2>
+    <div class="mx-auto bg-white p-8 shadow-lg">
  
 
         <div class="flex justify-end mb-6">
             <button id="add-user-btn" class="py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out">
-                <i data-lucide="user-plus" class="w-5 h-5 inline-block mr-2"></i> Tambah Pengguna Baru
+                <i data-lucide="user-plus" class="w-5 h-5 inline-block mr-2"></i> Tambah Users Baru
             </button>
         </div>
 
         <div id="status-message" class="hidden mb-4 p-4 text-center rounded-lg"></div>
 
-        <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+        <div class="overflow-x-auto relative">
             <table class="w-full text-sm text-left text-gray-500">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
                         <th scope="col" class="py-3 px-6">Nama</th>
                         <th scope="col" class="py-3 px-6">Email</th>
-                        <th scope="col" class="py-3 px-6">Peran</th>
-                        <th scope="col" class="py-3 px-6">Status Akun</th>
-                        <th scope="col" class="py-3 px-6">Berakhir Pada</th>
+                        <th scope="col" class="py-3 px-6">Role</th>
+                        <th scope="col" class="py-3 px-6">Status</th>
+                        <th scope="col" class="py-3 px-6">masa aktif</th>
                         <th scope="col" class="py-3 px-6">Aksi</th>
                     </tr>
                 </thead>
@@ -43,37 +43,37 @@ $apiURL = BASE_API_URL;
 </main>
 
 <div id="user-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+    <div class="bg-white p-8 shadow-lg max-w-lg w-full">
         <div class="flex justify-between items-center border-b pb-3 mb-4">
-            <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Tambah Pengguna Baru</h3>
+            <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Tambah Users Baru</h3>
             <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
         </div>
         <form id="user-form" class="space-y-4">
             <input type="hidden" id="user-id" name="user_id">
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
-                <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <input type="text" id="name" name="name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" id="email" name="email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <input type="email" id="email" name="email" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <input type="password" id="password" name="password" class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
             <div>
                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
-                <input type="password" id="password_confirmation" name="password_confirmation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <input type="password" id="password_confirmation" name="password_confirmation" class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
             <div>
-                <label for="role" class="block text-sm font-medium text-gray-700">Peran</label>
-                <select id="role" name="role" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+                <select id="role" name="role" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     </select>
             </div>
             <div>
                 <label for="account_status" class="block text-sm font-medium text-gray-700">Status Akun</label>
-                <select id="account_status" name="account_status" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <select id="account_status" name="account_status" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     <option value="active">Aktif</option>
                     <option value="inactive">Tidak Aktif</option>
                     <option value="suspended">Ditangguhkan</option>
@@ -82,7 +82,7 @@ $apiURL = BASE_API_URL;
             </div>
             <div id="expired-at-container" class="hidden">
                 <label for="expired_at" class="block text-sm font-medium text-gray-700">Berakhir Pada</label>
-                <input type="date" id="expired_at" name="expired_at" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <input type="date" id="expired_at" name="expired_at" class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
             <div class="mt-6 flex justify-end space-x-2">
                 <button type="button" id="cancel-btn" class="py-2 px-4 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400">Batal</button>
@@ -147,11 +147,11 @@ $apiURL = BASE_API_URL;
     }
 
     /**
-     * Mengambil data pengguna dari API dan mengisi tabel.
+     * Mengambil data Users dari API dan mengisi tabel.
      * @param {number} page - Halaman yang akan diambil.
      */
     async function fetchUsers(page = 1) {
-        showStatus('Memuat data pengguna...', 'info');
+        showStatus('Memuat data Users...', 'info');
         try {
             const response = await fetch(`${API_URL}/users?page=${page}`, {
                 headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
@@ -159,12 +159,12 @@ $apiURL = BASE_API_URL;
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || 'Gagal memuat data pengguna.');
+                throw new Error(data.message || 'Gagal memuat data Users.');
             }
 
             renderUserTable(data.data);
             renderPagination(data);
-            showStatus('Data pengguna berhasil dimuat.', 'success');
+            showStatus('Data Users berhasil dimuat.', 'success');
         } catch (error) {
             console.error('Kesalahan:', error);
             showStatus(`Gagal memuat data: ${error.message}`, 'error');
@@ -172,13 +172,13 @@ $apiURL = BASE_API_URL;
     }
 
     /**
-     * Merender data pengguna ke dalam tabel HTML.
-     * @param {Array} users - Array objek pengguna.
+     * Merender data Users ke dalam tabel HTML.
+     * @param {Array} users - Array objek Users.
      */
     function renderUserTable(users) {
         userTableBody.innerHTML = '';
         if (users.length === 0) {
-            userTableBody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-gray-500">Tidak ada pengguna yang ditemukan.</td></tr>';
+            userTableBody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-gray-500">Tidak ada Users yang ditemukan.</td></tr>';
             return;
         }
 
@@ -191,8 +191,8 @@ $apiURL = BASE_API_URL;
                     <td class="py-4 px-6 capitalize">${user.account_status}</td>
                     <td class="py-4 px-6">${user.expired_at ? new Date(user.expired_at).toLocaleDateString() : 'N/A'}</td>
                     <td class="py-4 px-6 space-x-2">
-                        <button onclick="editUser('${user.id}')" class="font-medium text-blue-600 hover:underline">Edit</button>
-                        <button onclick="deleteUser('${user.id}')" class="font-medium text-red-600 hover:underline">Hapus</button>
+                        <button onclick="editUser('${user.id}')" class="font-medium text-blue-600 hover:underline"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteUser('${user.id}')" class="font-medium text-red-600 hover:underline"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>
             `;
@@ -248,7 +248,7 @@ $apiURL = BASE_API_URL;
             const roles = await response.json();
 
             if (!response.ok) {
-                throw new Error(roles.message || 'Gagal memuat peran pengguna.');
+                throw new Error(roles.message || 'Gagal memuat peran Users.');
             }
             
             roleSelect.innerHTML = '';
@@ -268,7 +268,7 @@ $apiURL = BASE_API_URL;
     }
 
     addUserBtn.addEventListener('click', () => {
-        modalTitle.textContent = 'Tambah Pengguna Baru';
+        modalTitle.textContent = 'Tambah Users Baru';
         userIdInput.value = '';
         passwordInput.required = true;
         passwordConfirmInput.required = true;
@@ -337,11 +337,11 @@ $apiURL = BASE_API_URL;
     });
 
     /**
-     * Memuat data pengguna yang akan diedit ke dalam form.
-     * @param {string} userId - ID pengguna yang akan diedit.
+     * Memuat data Users yang akan diedit ke dalam form.
+     * @param {string} userId - ID Users yang akan diedit.
      */
     window.editUser = async (userId) => {
-        showStatus('Memuat data pengguna...', 'info');
+        showStatus('Memuat data Users...', 'info');
         try {
             const response = await fetch(`${API_URL}/users/${userId}`, {
                 headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
@@ -349,10 +349,10 @@ $apiURL = BASE_API_URL;
             const user = await response.json();
 
             if (!response.ok) {
-                throw new Error(user.message || 'Gagal memuat data pengguna untuk diedit.');
+                throw new Error(user.message || 'Gagal memuat data Users untuk diedit.');
             }
 
-            modalTitle.textContent = 'Edit Pengguna';
+            modalTitle.textContent = 'Edit Users';
             userIdInput.value = user.id;
             nameInput.value = user.name;
             emailInput.value = user.email;
@@ -371,23 +371,23 @@ $apiURL = BASE_API_URL;
             }
             
             openModal();
-            showStatus('Data pengguna siap untuk diedit.', 'success');
+            showStatus('Data Users siap untuk diedit.', 'success');
         } catch (error) {
             console.error('Kesalahan:', error);
-            showStatus(`Gagal mengedit pengguna: ${error.message}`, 'error');
+            showStatus(`Gagal mengedit Users: ${error.message}`, 'error');
         }
     };
 
     /**
-     * Menghapus pengguna dari database.
-     * @param {string} userId - ID pengguna yang akan dihapus.
+     * Menghapus Users dari database.
+     * @param {string} userId - ID Users yang akan dihapus.
      */
     window.deleteUser = async (userId) => {
-        if (!confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
+        if (!confirm('Apakah Anda yakin ingin menghapus Users ini?')) {
             return;
         }
 
-        showStatus('Menghapus pengguna...', 'info');
+        showStatus('Menghapus Users...', 'info');
         try {
             const response = await fetch(`${API_URL}/users/${userId}`, {
                 method: 'DELETE',
@@ -396,11 +396,11 @@ $apiURL = BASE_API_URL;
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.message || 'Gagal menghapus pengguna.');
+                throw new Error(data.message || 'Gagal menghapus Users.');
             }
             
             fetchUsers();
-            showStatus('Pengguna berhasil dihapus.', 'success');
+            showStatus('Users berhasil dihapus.', 'success');
         } catch (error) {
             console.error('Kesalahan:', error);
             showStatus(`Gagal menghapus: ${error.message}`, 'error');

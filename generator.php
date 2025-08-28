@@ -23,7 +23,7 @@ $appAccessToken = '1308899767242947|HVu-8GkDtyPmpAR2SQOAx2BT2bg';
             <div class="border border-gray-300 p-6 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="offer" class="block text-sm font-medium text-gray-700">Offers</label>
+                        <label for="offer" class="block text-sm font-medium text-gray-700">Offers (Opsional)</label>
                         <select id="offer" name="offer" class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
                     </div>
                     <div>
@@ -35,7 +35,7 @@ $appAccessToken = '1308899767242947|HVu-8GkDtyPmpAR2SQOAx2BT2bg';
                         <select id="redirect_type" name="redirect_type" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
                     </div>
                     <div>
-                        <label for="type" class="block text-sm font-medium text-gray-700">Smartlink</label>
+                        <label for="type" class="block text-sm font-medium text-gray-700">Smartlink Type</label>
                         <select id="type" name="type" required class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
                     </div>
                     <div>
@@ -50,7 +50,7 @@ $appAccessToken = '1308899767242947|HVu-8GkDtyPmpAR2SQOAx2BT2bg';
             </div>
 
             <div class="border border-gray-300 p-6">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Informasi Meta Tags</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Meta Tags (Opsional)</h3>
                 <div class="space-y-4">
                     <div>
                         <label for="meta_title" class="block text-sm font-medium text-gray-700">Meta Title</label>
@@ -79,16 +79,16 @@ $appAccessToken = '1308899767242947|HVu-8GkDtyPmpAR2SQOAx2BT2bg';
             <h3 class="text-xl font-semibold text-gray-800 mb-4">Hasil</h3>
             <div class="space-y-4">
                 <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                    <p class="text-sm font-medium text-gray-700">URL Akhir yang Dipendekkan:</p>
+                    <p class="text-sm font-medium text-gray-700">URL Final:</p>
                     <a id="final-url-link" href="#" target="_blank" class="text-blue-600 font-semibold break-all hover:underline"></a>
                 </div>
                 <div id="first-shortened-url-container" class="hidden bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                    <p class="text-sm font-medium text-gray-700">URL Smartlink yang Dipendekkan Eksternal:</p>
+                    <p class="text-sm font-medium text-gray-700">Url Smartlink/Shortlink:</p>
                     <a id="first-shortened-url-link" href="#" target="_blank" class="text-blue-600 font-semibold break-all hover:underline"></a>
                 </div>
             </div>
             <div id="scraping-log" class="hidden mt-4 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <h4 class="text-md font-semibold text-gray-800 mb-2">Log Scraping Facebook</h4>
+                <h4 class="text-md font-semibold text-gray-800 mb-2">Log Scraping</h4>
                 <div id="log-content">
                     <p id="log-message" class="text-gray-600"></p>
                     <pre id="log-details" class="bg-gray-100 p-2 text-sm text-gray-700 rounded overflow-auto mt-2"></pre>
@@ -213,7 +213,7 @@ $appAccessToken = '1308899767242947|HVu-8GkDtyPmpAR2SQOAx2BT2bg';
     }
 
     async function performScraping(url) {
-        showStatus('Memulai scraping Facebook Graph API...', 'info');
+        showStatus('Memulai scraping Graph API...', 'info');
         scrapingLog.classList.remove('hidden');
         logMessage.textContent = 'Mengirim permintaan scraping...';
         logDetails.textContent = '...';
@@ -293,7 +293,6 @@ $appAccessToken = '1308899767242947|HVu-8GkDtyPmpAR2SQOAx2BT2bg';
                 firstShortenedUrlContainer.classList.add('hidden');
             }
 
-            // Panggil fungsi scraping setelah URL dibuat
             await performScraping(data.final_shared_url);
             
         } catch (error) {
@@ -303,7 +302,6 @@ $appAccessToken = '1308899767242947|HVu-8GkDtyPmpAR2SQOAx2BT2bg';
         }
     });
 
-    // Event listener untuk tombol 'Scrape Ulang'
     scrapeAgainButton.addEventListener('click', () => {
         const urlToScrape = finalUrlLink.href;
         if (urlToScrape && urlToScrape !== '#') {

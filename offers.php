@@ -3,6 +3,7 @@ include 'layout/header.php';
 
 require_once 'config.php';
 
+// Verifikasi sesi dan otentikasi
 if (!isset($_SESSION['auth_token'])) {
     header('Location: login.php');
     exit();
@@ -10,6 +11,14 @@ if (!isset($_SESSION['auth_token'])) {
 
 $token = $_SESSION['auth_token'];
 
+/**
+ * Mengambil data dari endpoint API dengan otentikasi bearer token.
+ *
+ * @param string $endpoint URL endpoint API
+ * @param string $token Token otentikasi
+ * @return array Data yang diambil dari API
+ * @throws Exception Jika terjadi kesalahan saat mengambil data
+ */
 function fetchData($endpoint, $token)
 {
     if (!$token) {
@@ -38,24 +47,26 @@ function fetchData($endpoint, $token)
         exit();
     }
     
+    $responseData = json_decode($response, true);
+
     if ($httpStatus !== 200) {
-        $responseData = json_decode($response, true);
         $errorMessage = $responseData['message'] ?? "Gagal memuat data. Status: {$httpStatus}.";
         throw new Exception("Gagal memuat data dari {$endpoint}. Respons: {$errorMessage}");
     }
     
-    $decodedResponse = json_decode($response, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
         throw new Exception("Respons API tidak valid: " . json_last_error_msg());
     }
-
-    return $decodedResponse['data'] ?? [];
+    // API offers/index mengembalikan data yang langsung dapat diakses, tanpa 'data'
+    // Jadi, kita hanya perlu mengembalikan seluruh respons jika tidak ada kunci 'data'.
+    return $responseData['data'] ?? $responseData; 
 }
 
 $offers = [];
 $error = null;
 
 try {
+    // Mengambil data offers dari API
     $offers = fetchData(BASE_API_URL . '/offers', $token);
 } catch (Exception $e) {
     $error = $e->getMessage();
@@ -66,50 +77,51 @@ try {
 <main class="p-6 md:p-10 lg:p-12 w-full font-sans">
     <h2 class="text-3xl font-bold text-gray-900 mb-6">Offers Management</h2>
 
+    <!-- Message Container -->
     <div id="message-container" class="mb-4 hidden">
-        <div id="message-box" class="px-4 py-3 rounded relative" role="alert">
+        <div id="message-box" class="px-4 py-3 rounded-lg border relative" role="alert">
             <strong id="message-title" class="font-bold"></strong>
             <span id="message-text" class="block sm:inline"></span>
         </div>
     </div>
     
-    <div class="card p-6 rounded-lg shadow-md bg-white">
+    <div class="card p-6 shadow-xl bg-white">
         <div class="mb-6 flex justify-between items-center">
             <h3 class="text-xl font-semibold">Daftar Offers</h3>
-            <button id="open-add-modal" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+            <a href="create-offers.php" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors shadow-md">
                 Add Offers
-            </button>
+            </a>
         </div>
         <?php if ($error): ?>
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-4" role="alert">
                 <strong class="font-bold">Error:</strong>
                 <span class="block sm:inline"><?php echo htmlspecialchars($error); ?></span>
             </div>
         <?php endif; ?>
 
         <div class="table-container overflow-x-auto">
-            <table class="w-full border-collapse border border-gray-300" id="offers-table">
-                <thead>
-                    <tr class="table-header">
-                        <th class="table-cell">Nama</th>
-                        <th class="table-cell">URL</th>
-                        <th class="table-cell">Status</th>
-                        <th class="table-cell">Negara</th>
-                        <th class="table-cell">Perangkat</th>
-                        <th class="table-cell">Check Proxy</th>
-                        <th class="table-cell">Aksi</th>
+            <table class="min-w-full border-collapse border border-gray-300 overflow-hidden" id="offers-table">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Nama</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">URL</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Status</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Negara</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Perangkat</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Check Proxy</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php if (!empty($offers)): ?>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <?php if (!empty($offers) && is_array($offers)): ?>
                         <?php foreach ($offers as $offer): ?>
-                            <tr data-id="<?php echo htmlspecialchars($offer['id'] ?? ''); ?>">
-                                <td class="table-cell offer-name"><?php echo htmlspecialchars($offer['name'] ?? 'N/A'); ?></td>
-                                <td class="table-cell offer-url"><a href="<?php echo htmlspecialchars($offer['url'] ?? '#'); ?>" target="_blank" class="text-blue-600 hover:underline">Link</a></td>
-                                <td class="table-cell offer-status">
-                                    <span class="status-badge 
+                            <tr data-id="<?php echo htmlspecialchars($offer['id'] ?? ''); ?>" class="hover:bg-gray-50 transition-colors">
+                                <td class="py-3 px-4 whitespace-nowrap text-sm font-medium text-gray-900 offer-name"><?php echo htmlspecialchars($offer['name'] ?? 'N/A'); ?></td>
+                                <td class="py-3 px-4 whitespace-nowrap text-sm text-blue-600 offer-url"><a href="<?php echo htmlspecialchars($offer['url'] ?? '#'); ?>" target="_blank" class="hover:underline">Link</a></td>
+                                <td class="py-3 px-4 whitespace-nowrap text-sm offer-status">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold leading-tight
                                         <?php 
-                                            switch($offer['status']) {
+                                            switch($offer['status'] ?? '') {
                                                 case 'active': echo 'bg-green-100 text-green-800'; break;
                                                 case 'paused': echo 'bg-red-100 text-red-800'; break;
                                                 case 'pending': echo 'bg-yellow-100 text-yellow-800'; break;
@@ -120,21 +132,27 @@ try {
                                         <?php echo htmlspecialchars(ucfirst($offer['status'] ?? 'N/A')); ?>
                                     </span>
                                 </td>
-                                <td class="table-cell offer-country"><?php echo htmlspecialchars($offer['country'] ?? 'N/A'); ?></td>
-                                <td class="table-cell offer-device"><?php echo htmlspecialchars($offer['device'] ?? 'N/A'); ?></td>
-                                <td class="table-cell offer-proxy">
+                                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-500 offer-country"><?php echo htmlspecialchars($offer['country'] ?? 'N/A'); ?></td>
+                                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-500 offer-device"><?php echo htmlspecialchars($offer['device'] ?? 'N/A'); ?></td>
+                                <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-500 offer-proxy">
                                     <?php echo ($offer['can_show_to_proxy'] ?? false) ? 'Ya' : 'Tidak'; ?>
                                 </td>
-                                <td class="table-cell flex gap-2">
-                                    <button onclick='openEditModal(<?php echo htmlspecialchars(json_encode($offer), ENT_QUOTES, 'UTF-8'); ?>)' class="text-blue-600 hover:text-blue-900">Edit</button>
-                                    <button onclick='confirmDelete(<?php echo htmlspecialchars(json_encode($offer['id']), ENT_QUOTES, 'UTF-8'); ?>)' class="text-red-600 hover:text-red-900">Hapus</button>
+                                <td class="py-3 px-4 whitespace-nowrap text-right text-sm font-medium flex gap-2">
+                                    <!-- Edit link with Font Awesome icon -->
+                                    <a href="edit-offers.php?id=<?php echo htmlspecialchars($offer['id'] ?? ''); ?>" class="text-indigo-600 hover:text-indigo-900 transition-colors" title="Edit">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <!-- Delete button with Font Awesome icon -->
+                                    <button onclick='confirmDelete(<?php echo htmlspecialchars(json_encode($offer['id']), ENT_QUOTES, 'UTF-8'); ?>)' class="text-red-600 hover:text-red-900 transition-colors" title="Hapus">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="7" class="table-cell text-center text-gray-500 py-4">
-                                <?php echo $error ? 'Gagal memuat data.' : 'Tidak ada Offers yang ditemukan.'; ?>
+                            <td colspan="7" class="px-4 py-4 text-center text-sm text-gray-500">
+                                <?php echo $error ? 'Gagal memuat data offers: ' . htmlspecialchars($error) : 'Tidak ada offers yang ditemukan.'; ?>
                             </td>
                         </tr>
                     <?php endif; ?>
@@ -144,58 +162,14 @@ try {
     </div>
 </main>
 
-<div id="offer-modal" class="modal">
-    <div class="modal-content card max-w-lg w-full">
-        <h3 id="modal-title" class="text-xl font-semibold mb-4 text-gray-900">Tambah Offers Baru</h3>
-        <form id="offer-form">
-            <input type="hidden" id="offer-id" name="id">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Offers</label>
-                    <input type="text" name="name" id="name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: Promo Ramadhan 2025" required>
-                </div>
-                <div>
-                    <label for="url" class="block text-sm font-medium text-gray-700">URL</label>
-                    <input type="url" name="url" id="url" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="https://www.contoh.com" required>
-                </div>
-                <div>
-                    <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                    <select name="status" id="status" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-                        <option value="active">Active</option>
-                        <option value="paused">Paused</option>
-                        <option value="pending">Pending</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="country" class="block text-sm font-medium text-gray-700">Negara</label>
-                    <input type="text" name="country" id="country" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: US, ID, Global" required>
-                </div>
-                <div>
-                    <label for="device" class="block text-sm font-medium text-gray-700">Perangkat</label>
-                    <input type="text" name="device" id="device" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: Mobile, Desktop, All">
-                </div>
-                <div class="flex items-center">
-                    <input id="can_show_to_proxy" name="can_show_to_proxy" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                    <label for="can_show_to_proxy" class="ml-2 block text-sm text-gray-900">Check Proxy</label>
-                </div>
-            </div>
-            <div class="mt-6 flex justify-end gap-4">
-                <button type="button" id="close-modal" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400">Batal</button>
-                <button type="submit" id="submit-btn" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    Simpan Offers
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div id="delete-modal" class="modal">
-    <div class="modal-content card max-w-sm text-center">
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden flex items-center justify-center">
+    <div class="relative p-8 bg-white w-96 max-w-md m-auto flex-col flex rounded-lg shadow-lg text-center">
         <h3 class="text-lg font-bold mb-4">Konfirmasi Penghapusan</h3>
         <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus Offers ini?</p>
         <div class="flex justify-center gap-4">
-            <button id="cancel-delete" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded hover:bg-gray-400">Batal</button>
-            <button id="confirm-delete" class="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700">Hapus</button>
+            <button id="cancel-delete" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md hover:bg-gray-400 transition-colors">Batal</button>
+            <button id="confirm-delete" class="bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-700 transition-colors">Hapus</button>
         </div>
     </div>
 </div>
@@ -204,21 +178,14 @@ try {
     const API_URL = '<?php echo BASE_API_URL; ?>';
     const TOKEN = '<?php echo $token; ?>';
     
-    const offersTableBody = document.querySelector('#offers-table tbody');
     const messageContainer = document.getElementById('message-container');
     const messageBox = document.getElementById('message-box');
     const messageTitle = document.getElementById('message-title');
     const messageText = document.getElementById('message-text');
 
-    const offerModal = document.getElementById('offer-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const offerForm = document.getElementById('offer-form');
-    const offerIdInput = document.getElementById('offer-id');
-    const submitBtn = document.getElementById('submit-btn');
-
     function showMessage(type, title, message) {
         messageContainer.classList.remove('hidden');
-        messageBox.className = 'px-4 py-3 rounded relative';
+        messageBox.className = 'px-4 py-3 rounded-lg border relative';
         if (type === 'success') {
             messageBox.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
         } else {
@@ -231,144 +198,13 @@ try {
         }, 5000);
     }
 
-    async function refreshOffersTable() {
-        try {
-            const response = await fetch(`${API_URL}/offers`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${TOKEN}`
-                }
-            });
-            const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.message || 'Gagal memuat data terbaru.');
-            }
-
-            offersTableBody.innerHTML = '';
-            const offers = data.data;
-
-            if (offers.length === 0) {
-                offersTableBody.innerHTML = `<tr><td colspan="7" class="table-cell text-center text-gray-500 py-4">Tidak ada Offers yang ditemukan.</td></tr>`;
-                return;
-            }
-
-            offers.forEach(offer => {
-                const newRow = document.createElement('tr');
-                newRow.dataset.id = offer.id;
-                newRow.innerHTML = `
-                    <td class="table-cell offer-name">${offer.name}</td>
-                    <td class="table-cell offer-url"><a href="${offer.url}" target="_blank" class="text-blue-600 hover:underline">Link</a></td>
-                    <td class="table-cell offer-status">
-                        <span class="status-badge ${getBadgeClass(offer.status)}">
-                            ${offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
-                        </span>
-                    </td>
-                    <td class="table-cell offer-country">${offer.country}</td>
-                    <td class="table-cell offer-device">${offer.device || 'N/A'}</td>
-                    <td class="table-cell offer-proxy">
-                        ${offer.can_show_to_proxy ? 'Ya' : 'Tidak'}
-                    </td>
-                    <td class="table-cell flex gap-2">
-                        <button onclick='openEditModal(${JSON.stringify(offer)})' class="text-blue-600 hover:text-blue-900">Edit</button>
-                        <button onclick='confirmDelete(${offer.id})' class="text-red-600 hover:text-red-900">Hapus</button>
-                    </td>
-                `;
-                offersTableBody.appendChild(newRow);
-            });
-        } catch (error) {
-            showMessage('error', 'Error', error.message);
-        }
-    }
-
-    function getBadgeClass(status) {
-        switch(status) {
-            case 'active': return 'bg-green-100 text-green-800';
-            case 'paused': return 'bg-red-100 text-red-800';
-            case 'pending': return 'bg-yellow-100 text-yellow-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
-    }
-
-    document.getElementById('open-add-modal').addEventListener('click', () => {
-        modalTitle.innerText = 'Tambah Offers Baru';
-        submitBtn.innerText = 'Simpan Offers';
-        offerIdInput.value = ''; 
-        offerForm.reset();
-        offerModal.style.display = 'flex';
-    });
-    
-    document.getElementById('close-modal').addEventListener('click', () => {
-        offerModal.style.display = 'none';
-    });
-
-    window.addEventListener('click', (event) => {
-        if (event.target === offerModal) {
-            offerModal.style.display = 'none';
-        }
-    });
-
-    function openEditModal(offer) {
-        modalTitle.innerText = 'Edit Offers';
-        submitBtn.innerText = 'Perbarui Offers';
-        offerIdInput.value = offer.id;
-        offerForm.querySelector('#name').value = offer.name;
-        offerForm.querySelector('#url').value = offer.url;
-        offerForm.querySelector('#status').value = offer.status;
-        offerForm.querySelector('#country').value = offer.country;
-        offerForm.querySelector('#device').value = offer.device || '';
-        offerForm.querySelector('#can_show_to_proxy').checked = offer.can_show_to_proxy;
-        
-        offerModal.style.display = 'flex';
-    }
-
-    offerForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const isEditing = offerIdInput.value !== '';
-        const method = isEditing ? 'PUT' : 'POST';
-        const url = isEditing ? `${API_URL}/offers/${offerIdInput.value}` : `${API_URL}/offers`;
-        
-        const formData = new FormData(offerForm);
-        const offerData = Object.fromEntries(formData.entries());
-        offerData.can_show_to_proxy = offerForm.elements.can_show_to_proxy.checked ? 1 : 0;
-        
-        try {
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${TOKEN}`
-                },
-                body: JSON.stringify(offerData)
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                showMessage('success', 'Berhasil', data.message);
-                offerModal.style.display = 'none';
-                refreshOffersTable();
-            } else {
-                let errorMessage = data.message || (isEditing ? 'Gagal memperbarui Offers.' : 'Gagal menyimpan Offers.');
-                if (data.errors) {
-                    errorMessage += ': ' + Object.values(data.errors).flat().join(' ');
-                }
-                showMessage('error', 'Error', errorMessage);
-            }
-        } catch (error) {
-            showMessage('error', 'Error', 'Terjadi kesalahan jaringan.');
-        }
-    });
-
     function confirmDelete(id) {
-        document.getElementById('delete-modal').style.display = 'flex';
+        document.getElementById('delete-modal').classList.remove('hidden');
         document.getElementById('confirm-delete').onclick = () => deleteOffer(id);
     }
 
     async function deleteOffer(id) {
-        document.getElementById('delete-modal').style.display = 'none';
+        document.getElementById('delete-modal').classList.add('hidden');
         try {
             const response = await fetch(`${API_URL}/offers/${id}`, {
                 method: 'DELETE',
@@ -381,7 +217,20 @@ try {
 
             if (response.ok) {
                 showMessage('success', 'Berhasil', data.message);
-                refreshOffersTable();
+                
+                // Cari dan hapus baris tabel yang sesuai
+                const row = document.querySelector(`tr[data-id='${id}']`);
+                if (row) {
+                    row.remove();
+                }
+                
+                // Tambahkan pesan jika tabel kosong
+                if (document.querySelector('#offers-table tbody').children.length === 0) {
+                    const noOffersRow = document.createElement('tr');
+                    noOffersRow.innerHTML = `<td colspan="7" class="px-4 py-4 text-center text-sm text-gray-500">Tidak ada offers yang ditemukan.</td>`;
+                    document.querySelector('#offers-table tbody').appendChild(noOffersRow);
+                }
+
             } else {
                 showMessage('error', 'Error', data.message || 'Gagal menghapus Offers.');
             }
@@ -391,10 +240,26 @@ try {
     }
 
     document.getElementById('cancel-delete').addEventListener('click', () => {
-        document.getElementById('delete-modal').style.display = 'none';
+        document.getElementById('delete-modal').classList.add('hidden');
     });
 
-    refreshOffersTable();
+    // Handle closing the modal when clicking outside
+    document.getElementById('delete-modal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+    });
+
+    // Check for a success message in the URL after a successful redirect
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const successMessage = urlParams.get('success');
+        if (successMessage) {
+            showMessage('success', 'Berhasil', successMessage);
+            // Bersihkan parameter dari URL agar tidak muncul lagi saat refresh
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    });
 </script>
 
 <?php

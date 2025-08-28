@@ -54,7 +54,7 @@ function callApi($url, $token, $params) {
     return json_decode($response, true);
 }
 
-// Variabel untuk menyimpan data laporan dan total item
+// Variabel untuk menyimpan data dan total item
 $reportData = null;
 $totalItems = 0; // Default total item
 $totalPages = 0; // Default total halaman
@@ -139,7 +139,7 @@ $breakdownUrl = buildFilterUrl('breakdown', $_GET);
 ?>
 
 <main class="flex-grow p-6 md:p-10 lg:p-12">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6">Laporan ApexTrack</h2>
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Reports</h2>
 
     <div class="border-b border-gray-200 mb-8">
         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
@@ -147,31 +147,31 @@ $breakdownUrl = buildFilterUrl('breakdown', $_GET);
                 <?php echo $activeView === 'advance' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'; ?>
                 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
             ">
-                Laporan Lanjutan
+                advance
             </a>
             <a href="<?php echo htmlspecialchars($clicksUrl); ?>" class="
                 <?php echo $activeView === 'clicks' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'; ?>
                 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
             ">
-                Laporan Clicks
+                Clicks
             </a>
             <a href="<?php echo htmlspecialchars($leadsUrl); ?>" class="
                 <?php echo $activeView === 'leads' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'; ?>
                 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
             ">
-                Laporan Leads
+                Conversion
             </a>
             <a href="<?php echo htmlspecialchars($breakdownUrl); ?>" class="
                 <?php echo $activeView === 'breakdown' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'; ?>
                 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
             ">
-                Laporan Breakdown
+                Breakdown
             </a>
         </nav>
     </div>
 
-    <div class="mx-auto bg-white p-8 rounded-xl shadow-lg">
-        <form action="" method="GET" class="mb-8 p-4 bg-gray-50 rounded-lg shadow-inner flex flex-wrap items-end gap-4">
+    <div class="mx-auto bg-white p-8 shadow-lg">
+        <form action="" method="GET" class="mb-8 p-4 bg-gray-50  shadow-inner flex flex-wrap items-end gap-4">
             <input type="hidden" name="view" value="<?php echo htmlspecialchars($activeView); ?>">
             <div class="flex-grow">
                 <label for="start_date" class="block text-sm font-medium text-gray-700">Tanggal Mulai:</label>
@@ -200,21 +200,21 @@ $breakdownUrl = buildFilterUrl('breakdown', $_GET);
 
         <?php if ($activeView === 'advance'): ?>
             <div class="mb-10">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Laporan Lanjutan</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">advance</h2>
                 <?php if (isset($reportData['error'])): ?>
                     <p class="text-red-500"><?php echo htmlspecialchars($reportData['message']); ?></p>
                 <?php elseif (empty($reportData['data'])): ?>
-                    <p class="text-gray-500">Tidak ada data laporan lanjutan yang ditemukan.</p>
+                    <p class="text-gray-500">Tidak ada data advance yang ditemukan.</p>
                 <?php else: ?>
-                    <div class="overflow-x-auto shadow-md rounded-lg">
+                    <div class="overflow-x-auto shadow-md ">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Hits</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unique Clicks</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Leads</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approved Leads</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sub ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hits</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unique</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conversions</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approved</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CR (%)</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Payout</th>
                                 </tr>
@@ -238,18 +238,18 @@ $breakdownUrl = buildFilterUrl('breakdown', $_GET);
             </div>
         <?php elseif ($activeView === 'clicks'): ?>
             <div class="mb-10">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Laporan Clicks</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Clicks</h2>
                 <?php if (isset($reportData['error'])): ?>
                     <p class="text-red-500"><?php echo htmlspecialchars($reportData['message']); ?></p>
                 <?php elseif (empty($reportData['data'])): ?>
                     <p class="text-gray-500">Tidak ada data clicks yang ditemukan.</p>
                 <?php else: ?>
-                    <div class="overflow-x-auto shadow-md rounded-lg">
+                    <div class="overflow-x-auto shadow-md ">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sub ID</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Negara</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device</th>
@@ -272,13 +272,13 @@ $breakdownUrl = buildFilterUrl('breakdown', $_GET);
             </div>
         <?php elseif ($activeView === 'leads'): ?>
             <div class="mb-10">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Laporan Leads</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Conversion</h2>
                 <?php if (isset($reportData['error'])): ?>
                     <p class="text-red-500"><?php echo htmlspecialchars($reportData['message']); ?></p>
                 <?php elseif (empty($reportData['data'])): ?>
-                    <p class="text-gray-500">Tidak ada data leads yang ditemukan.</p>
+                    <p class="text-gray-500">Tidak ada data Conversion yang ditemukan.</p>
                 <?php else: ?>
-                    <div class="overflow-x-auto shadow-md rounded-lg">
+                    <div class="overflow-x-auto shadow-md ">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -306,21 +306,21 @@ $breakdownUrl = buildFilterUrl('breakdown', $_GET);
             </div>
         <?php elseif ($activeView === 'breakdown'): ?>
             <div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Laporan Breakdown (<?php echo ucwords(str_replace('_', ' ', $breakdownBy)); ?>)</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Breakdown (<?php echo ucwords(str_replace('_', ' ', $breakdownBy)); ?>)</h2>
                 <?php if (isset($reportData['error'])): ?>
                     <p class="text-red-500"><?php echo htmlspecialchars($reportData['message']); ?></p>
                 <?php elseif (empty($reportData['data'])): ?>
                     <p class="text-gray-500">Tidak ada data breakdown yang ditemukan.</p>
                 <?php else: ?>
-                    <div class="overflow-x-auto shadow-md rounded-lg">
+                    <div class="overflow-x-auto shadow-md ">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><?php echo ucwords(str_replace('_', ' ', $breakdownBy)); ?></th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hits</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unique Clicks</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leads</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approved Leads</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conversions</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approved</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CR (%)</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Payout</th>
                                 </tr>
