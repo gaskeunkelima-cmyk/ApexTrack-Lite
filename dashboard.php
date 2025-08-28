@@ -1,113 +1,47 @@
 <?php
-include 'layout/header.php';
+include 'layout/header.php'; // Memuat header, termasuk CSS dan JS
 
-require_once 'config.php';
-
-$token = $_SESSION['auth_token'];
-$endpoint = '/dashboard';
-
-function fetchData($url, $token)
-{
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Accept: application/json',
-        "Authorization: Bearer {$token}"
-    ]);
-
-    $response = curl_exec($ch);
-    $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlError = curl_error($ch);
-    curl_close($ch);
-
-    if ($curlError) {
-        throw new Exception("Kesalahan saat mengambil data dari {$url}: " . $curlError);
-    }
-    
-    if ($httpStatus === 401) {
-        throw new Exception("Unauthorized. Token tidak valid atau kedaluwarsa.");
-    }
-    
-    if ($httpStatus === 404) {
-        throw new Exception("Endpoint tidak ditemukan: {$url}.");
-    }
-    
-    if ($httpStatus !== 200) {
-        $responseData = json_decode($response, true);
-        $errorMessage = $responseData['error'] ?? "Gagal memuat data. Status: {$httpStatus}.";
-        throw new Exception("Gagal memuat data dari {$url}. Respons: {$errorMessage}");
-    }
-    
-    $decodedResponse = json_decode($response, true);
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Respons API tidak valid: " . json_last_error_msg());
-    }
-
-    return $decodedResponse;
-}
-
-try {
-    $dashboardData = fetchData(BASE_API_URL . $endpoint, $token);
-
-    $summaryData = $dashboardData['summary'] ?? [];
-    $recentClicks = $dashboardData['recent_clicks'] ?? [];
-    $recentLeads = $dashboardData['recent_leads'] ?? [];
-    $performanceReport = $dashboardData['performance_report'] ?? [];
-    
-    $todayClicks = $summaryData['today_clicks'] ?? 0;
-    $todayLeads = $summaryData['today_leads'] ?? 0;
-    $todayRevenue = $summaryData['today_revenue'] ?? 0;
-    $todayEpc = $summaryData['today_epc'] ?? 0;
-
-} catch (Exception $e) {
-    session_destroy();
-    header('Location: login.php?error=' . urlencode($e->getMessage()));
+if (!isset($_SESSION['auth_token'])) {
+    header('Location: login.php?error=' . urlencode('Sesi Anda telah berakhir. Silakan login kembali.'));
     exit();
 }
+
 ?>
 
 <main class="p-6 md:p-10 lg:p-12 w-full font-sans">
     <h2 class="text-3xl font-bold text-gray-900 mb-6">Dashboard</h2>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div class="card flex flex-col items-start bg-blue-100 text-blue-800 border-l-4 border-blue-500 p-4 shadow-md">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6" id="summary-cards">
+        <div class="card flex flex-col items-start bg-blue-100 text-blue-800 border-l-4 border-blue-500 p-4 shadow-md summary-clicks">
             <div class="flex items-center mb-1">
                 <i class="fa-solid fa-chart-line w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">Clicks Today</h3>
             </div>
-            <div class="text-2xl font-bold">
-                <?php echo htmlspecialchars(number_format($todayClicks)); ?>
-            </div>
+            <div class="text-2xl font-bold" id="clicks-today">0</div>
         </div>
         
-        <div class="card flex flex-col items-start bg-purple-100 text-purple-800 border-l-4 border-purple-500 p-4 shadow-md">
+        <div class="card flex flex-col items-start bg-purple-100 text-purple-800 border-l-4 border-purple-500 p-4 shadow-md summary-conversions">
             <div class="flex items-center mb-1">
                 <i class="fa-solid fa-user-check w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">Conversions Today</h3>
             </div>
-            <div class="text-2xl font-bold">
-                <?php echo htmlspecialchars(number_format($todayLeads)); ?>
-            </div>
+            <div class="text-2xl font-bold" id="conversions-today">0</div>
         </div>
         
-        <div class="card flex flex-col items-start bg-orange-100 text-orange-800 border-l-4 border-orange-500 p-4 shadow-md">
+        <div class="card flex flex-col items-start bg-orange-100 text-orange-800 border-l-4 border-orange-500 p-4 shadow-md summary-revenue">
             <div class="flex items-center mb-1">
                 <i class="fa-solid fa-dollar-sign w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">Revenue Today</h3>
             </div>
-            <div class="text-2xl font-bold">
-                $<?php echo htmlspecialchars(number_format($todayRevenue, 2)); ?>
-            </div>
+            <div class="text-2xl font-bold" id="revenue-today">$0.00</div>
         </div>
         
-        <div class="card flex flex-col items-start bg-green-100 text-green-800 border-l-4 border-green-500 p-4 shadow-md">
+        <div class="card flex flex-col items-start bg-green-100 text-green-800 border-l-4 border-green-500 p-4 shadow-md summary-epc">
             <div class="flex items-center mb-1">
                 <i class="fa-solid fa-arrow-trend-up w-5 h-5 mr-2"></i>
                 <h3 class="text-sm font-semibold uppercase">EPC Today</h3>
             </div>
-            <div class="text-2xl font-bold">
-                $<?php echo htmlspecialchars(number_format($todayEpc, 2)); ?>
-            </div>
+            <div class="text-2xl font-bold" id="epc-today">$0.00</div>
         </div>
     </div>
 
@@ -129,68 +63,15 @@ try {
                         <th class="py-2 px-4 text-sm text-gray-500 font-semibold uppercase border border-gray-300">Date</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php if (!empty($recentClicks)): ?>
-                        <?php foreach ($recentClicks as $click): ?>
-                            <tr>
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
-                                    <div class="flex items-center">
-                                        <i class="fa-solid fa-user w-4 h-4 mr-2"></i>
-                                        <?php echo htmlspecialchars($click['sub_id'] ?? 'N/A'); ?>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['offer_name'] ?? 'N/A'); ?></td>
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['ip_address'] ?? 'N/A'); ?></td>
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
-                                    <div class="flex items-center">
-                                        <?php 
-                                            $countryCode = strtolower($click['country_code'] ?? 'us'); // Default ke 'us'
-                                            // Beberapa kode negara memiliki mapping berbeda di flag-icon-css
-                                            // Contoh: UK -> gb, US -> us (sudah sesuai)
-                                            if ($countryCode === 'uk') $countryCode = 'gb';
-                                            // Tambahkan mapping lain jika diperlukan
-                                        ?>
-                                        <span class="flag-icon flag-icon-<?php echo htmlspecialchars($countryCode); ?> mr-2"></span>
-                                        <?php echo htmlspecialchars($click['country_code'] ?? 'N/A'); ?>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['os'] ?? 'N/A'); ?></td>
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
-                                    <div class="flex items-center">
-                                        <?php 
-                                            $deviceIcon = 'fa-mobile-screen-button';
-                                            if (isset($click['device_type'])) {
-                                                switch (strtolower($click['device_type'])) {
-                                                    case 'desktop':
-                                                        $deviceIcon = 'fa-desktop';
-                                                        break;
-                                                    case 'tablet':
-                                                        $deviceIcon = 'fa-tablet';
-                                                        break;
-                                                    default: // 'mobile' atau lainnya
-                                                        $deviceIcon = 'fa-mobile-screen-button';
-                                                        break;
-                                                }
-                                            }
-                                        ?>
-                                        <i class="fa-solid <?php echo $deviceIcon; ?> w-4 h-4 mr-2"></i>
-                                        <?php echo htmlspecialchars($click['device_type'] ?? 'N/A'); ?>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($click['redirect_type_used'] ?? 'N/A'); ?></td> 
-                                <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars(date('d/m/Y H:i:s', strtotime($click['created_at']))); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="9" class="text-center text-gray-500 py-4 border border-gray-300">Tidak ada klik terbaru hari ini.</td>
-                        </tr>
-                    <?php endif; ?>
+                <tbody id="recent-clicks-table-body">
+                    <tr>
+                        <td colspan="8" class="text-center text-gray-500 py-4 border border-gray-300">Memuat data...</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <div class="card p-6 shadow-md bg-white">
             <div class="flex items-center text-gray-900 mb-4">
@@ -208,28 +89,10 @@ try {
                             <th class="py-2 px-4 text-sm text-gray-500 font-semibold uppercase border border-gray-300">EPC ($)</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php if (!empty($performanceReport)): ?>
-                            <?php foreach ($performanceReport as $report): ?>
-                                <tr>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
-                                        <div class="flex items-center">
-                                            <i class="fa-solid fa-user w-4 h-4 mr-2"></i>
-                                            <?php echo htmlspecialchars($report['sub_id'] ?? 'N/A'); ?>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars(number_format($report['hits'] ?? 0)); ?></td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars(number_format($report['conversions'] ?? 0)); ?></td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">$<?php echo htmlspecialchars(number_format($report['revenue'] ?? 0, 2)); ?></td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars(number_format($report['cr'] ?? 0, 2)); ?>%</td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">$<?php echo htmlspecialchars(number_format($report['epc'] ?? 0, 2)); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" class="text-center text-gray-500 py-4 border border-gray-300">Tidak ada data untuk laporan kinerja.</td>
-                            </tr>
-                        <?php endif; ?>
+                    <tbody id="performance-report-table-body">
+                        <tr>
+                            <td colspan="6" class="text-center text-gray-500 py-4 border border-gray-300">Memuat data...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -251,67 +114,148 @@ try {
                             <th class="py-2 px-4 text-sm text-gray-500 font-semibold uppercase border border-gray-300">Date</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php if (!empty($recentLeads)): ?>
-                            <?php foreach ($recentLeads as $lead): ?>
-                                <tr>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
-                                        <div class="flex items-center">
-                                            <i class="fa-solid fa-user w-4 h-4 mr-2"></i>
-                                            <?php echo htmlspecialchars($lead['sub_id'] ?? 'N/A'); ?>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">$<?php echo htmlspecialchars(number_format($lead['payout'] ?? 0, 2)); ?></td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
-                                        <div class="flex items-center">
-                                            <?php 
-                                                $countryCode = strtolower($lead['country_code'] ?? 'us'); // Default ke 'us'
-                                                if ($countryCode === 'uk') $countryCode = 'gb';
-                                            ?>
-                                            <span class="flag-icon flag-icon-<?php echo htmlspecialchars($countryCode); ?> mr-2"></span>
-                                            <?php echo htmlspecialchars($lead['country_code'] ?? 'N/A'); ?>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300">
-                                        <div class="flex items-center">
-                                            <?php
-                                                $deviceIcon = 'fa-mobile-screen-button';
-                                                if (isset($lead['device_type'])) {
-                                                    switch (strtolower($lead['device_type'])) {
-                                                        case 'desktop':
-                                                            $deviceIcon = 'fa-desktop';
-                                                            break;
-                                                        case 'tablet':
-                                                            $deviceIcon = 'fa-tablet';
-                                                            break;
-                                                        default:
-                                                            $deviceIcon = 'fa-mobile-screen-button';
-                                                            break;
-                                                    }
-                                                }
-                                            ?>
-                                            <i class="fa-solid <?php echo $deviceIcon; ?> w-4 h-4 mr-2"></i>
-                                            <?php echo htmlspecialchars($lead['device_type'] ?? 'N/A'); ?>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars($lead['ip_address'] ?? 'N/A'); ?></td>
-                                    <td class="py-3 px-4 text-sm text-gray-700 border border-gray-300"><?php echo htmlspecialchars(date('d/m/Y H:i:s', strtotime($lead['created_at']))); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" class="text-center text-gray-500 py-4 border border-gray-300">Tidak ada konversi terbaru hari ini.</td>
-                            </tr>
-                        <?php endif; ?>
+                    <tbody id="recent-conversions-table-body">
+                        <tr>
+                            <td colspan="6" class="text-center text-gray-500 py-4 border border-gray-300">Memuat data...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</div>
 </main>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const fetchDataAndRender = async () => {
+        try {
+            const response = await fetch('api/dashboard.php'); // Pastikan path ini benar
+            const data = await response.json();
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = 'login.php?error=' + encodeURIComponent(data.error);
+                }
+                throw new Error(data.error || 'Failed to fetch data.');
+            }
+
+            // Render Summary Cards
+            document.getElementById('clicks-today').textContent = new Intl.NumberFormat().format(data.summary.today_clicks || 0);
+            document.getElementById('conversions-today').textContent = new Intl.NumberFormat().format(data.summary.today_leads || 0);
+            document.getElementById('revenue-today').textContent = '$' + new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(data.summary.today_revenue || 0);
+            document.getElementById('epc-today').textContent = '$' + new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(data.summary.today_epc || 0);
+
+            // Render Tables
+            const renderTable = (tableBodyId, tableData, columns, emptyMessage) => {
+                const tableBody = document.getElementById(tableBodyId);
+                tableBody.innerHTML = ''; // Clear old content
+
+                if (tableData && tableData.length > 0) {
+                    tableData.forEach(row => {
+                        const tr = document.createElement('tr');
+                        columns.forEach(col => {
+                            const td = document.createElement('td');
+                            td.className = 'py-3 px-4 text-sm text-gray-700 border border-gray-300';
+                            let content = row[col.key] ?? 'N/A';
+                            
+                            // Custom rendering for specific columns
+                            if (col.key === 'country_code') {
+                                const countryCode = (row.country_code ?? 'us').toLowerCase();
+                                const flagCode = countryCode === 'uk' ? 'gb' : countryCode;
+                                td.innerHTML = `<div class="flex items-center"><span class="flag-icon flag-icon-${flagCode} mr-2"></span>${row.country_code ?? 'N/A'}</div>`;
+                            } else if (col.key === 'device_type') {
+                                let deviceIcon = 'fa-mobile-screen-button';
+                                if (row.device_type) {
+                                    switch (row.device_type.toLowerCase()) {
+                                        case 'desktop': deviceIcon = 'fa-desktop'; break;
+                                        case 'tablet': deviceIcon = 'fa-tablet'; break;
+                                    }
+                                }
+                                td.innerHTML = `<div class="flex items-center"><i class="fa-solid ${deviceIcon} w-4 h-4 mr-2"></i>${row.device_type ?? 'N/A'}</div>`;
+                            } else if (col.key === 'created_at') {
+                                const date = new Date(row.created_at);
+                                content = date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + date.toLocaleTimeString('id-ID');
+                                td.textContent = content;
+                            } else if (col.key === 'payout' || col.key === 'revenue') {
+                                const value = parseFloat(row.payout || row.revenue) || 0; // Fix: Use parseFloat
+                                content = `$${value.toFixed(2)}`;
+                                td.textContent = content;
+                            } else if (col.key === 'cr') {
+                                const value = parseFloat(row.cr) || 0; // Fix: Use parseFloat
+                                content = `${value.toFixed(2)}%`;
+                                td.textContent = content;
+                            } else if (col.key === 'epc') {
+                                const value = parseFloat(row.epc) || 0; // Fix: Use parseFloat
+                                content = `$${value.toFixed(2)}`;
+                                td.textContent = content;
+                            } else if (col.key === 'hits' || col.key === 'conversions') {
+                                content = new Intl.NumberFormat().format(row[col.key] || 0);
+                                td.textContent = content;
+                            } else if (col.key === 'sub_id') {
+                                td.innerHTML = `<div class="flex items-center"><i class="fa-solid fa-user w-4 h-4 mr-2"></i>${row.sub_id ?? 'N/A'}</div>`;
+                            }
+                             else {
+                                td.textContent = content;
+                            }
+                            tr.appendChild(td);
+                        });
+                        tableBody.appendChild(tr);
+                    });
+                } else {
+                    tableBody.innerHTML = `<tr><td colspan="${columns.length}" class="text-center text-gray-500 py-4 border border-gray-300">${emptyMessage}</td></tr>`;
+                }
+            };
+            
+            // Define columns for each table
+            const recentClicksColumns = [
+                { key: 'sub_id' },
+                { key: 'offer_name' },
+                { key: 'ip_address' },
+                { key: 'country_code' },
+                { key: 'os' },
+                { key: 'device_type' },
+                { key: 'redirect_type_used' },
+                { key: 'created_at' }
+            ];
+            
+            const performanceReportColumns = [
+                { key: 'sub_id' },
+                { key: 'hits' },
+                { key: 'conversions' },
+                { key: 'revenue' },
+                { key: 'cr' },
+                { key: 'epc' }
+            ];
+
+            const recentConversionsColumns = [
+                { key: 'sub_id' },
+                { key: 'payout' },
+                { key: 'country_code' },
+                { key: 'device_type' },
+                { key: 'ip_address' },
+                { key: 'created_at' }
+            ];
+
+            // Render all tables
+            renderTable('recent-clicks-table-body', data.recent_clicks, recentClicksColumns, 'Tidak ada klik terbaru hari ini.');
+            renderTable('performance-report-table-body', data.performance_report, performanceReportColumns, 'Tidak ada data untuk laporan kinerja.');
+            renderTable('recent-conversions-table-body', data.recent_leads, recentConversionsColumns, 'Tidak ada konversi terbaru hari ini.');
+
+        } catch (error) {
+            console.error('Error fetching dashboard data:', error);
+            // Anda dapat menambahkan pesan error di UI
+        }
+    };
+
+    // Panggil fungsi saat halaman dimuat
+    fetchDataAndRender();
+
+    // Perbarui data setiap 30 detik
+    setInterval(fetchDataAndRender, 30000); // 30000ms = 30 detik
+});
+</script>
 
 <?php
-include 'layout/footer.php';
+include 'layout/footer.php'; // Memuat footer
 ?>
