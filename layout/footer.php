@@ -1,5 +1,4 @@
-<main>
-
+</main>
     
 <footer class="bg-white text-gray-600 p-4 shadow-md">
     <div class="flex flex-col md:flex-row justify-between items-center mx-auto">
@@ -43,5 +42,3 @@
         lucide.createIcons();
     });
 </script>
-</body>
-</html>
