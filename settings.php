@@ -1,26 +1,34 @@
 <?php
-// ... kode yang sama di bagian atas ...
+include 'layout/header.php';
+require_once 'config.php';
+
+if (!isset($_SESSION['auth_token'])) {
+    header('Location: login.php');
+    exit();
+}
+
+// === PENTING: Pindahkan definisi variabel ke atas untuk mencegah error ===
 $settingsFile = 'settings.json';
 $uploadsDir = 'uploads/';
 $allowedFileTypes = ['image/x-icon', 'image/vnd.microsoft.icon'];
 $message = '';
 $messageType = '';
+// =========================================================================
 
 // Pengaturan pembaruan versi
-$versionFileUrl = 'https://raw.githubusercontent.com/apextrack/ApexTrack-Lite/master/version.txt';
-$repoOwner = 'apextrack'; 
-$repoName = 'ApexTrack-Lite'; 
-$latestVersionApiUrl = "https://api.github.com/repos/{$repoOwner}/{$repoName}/releases/latest";
+$repoOwner = 'apextrack';
+$repoName = 'ApexTrack-Lite';
+$versionFileLocal = 'version.txt';
+$versionFileGithub = "https://raw.githubusercontent.com/{$repoOwner}/{$repoName}/master/version.txt";
 
-$currentVersion = '1.2.1'; // Versi fallback jika gagal terhubung ke GitHub
+$currentVersion = '1.2.1'; // Versi fallback jika gagal terhubung
 $context = stream_context_create([
     'http' => ['header' => 'User-Agent: PHP-Script']
 ]);
 
-// Ambil versi saat ini langsung dari file version.txt di GitHub
-$versionData = @file_get_contents($versionFileUrl, false, $context);
-if ($versionData !== false) {
-    $currentVersion = trim($versionData);
+// Ambil versi saat ini dari file lokal
+if (file_exists($versionFileLocal)) {
+    $currentVersion = trim(file_get_contents($versionFileLocal));
 }
 
 // Cek apakah direktori uploads ada, jika tidak, buat
@@ -87,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'favicon_url' => $newFaviconUrl
             ];
             $jsonData = json_encode($settings, JSON_PRETTY_PRINT);
-            
+
             if ($jsonData === false) {
                 $message = 'Gagal mengonversi data ke JSON.';
                 $messageType = 'error';
@@ -104,25 +112,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Logika cek pembaruan menggunakan API GitHub
+// Logika cek pembaruan menggunakan GitHub
 $latestVersion = null;
 $updateAvailable = false;
 $updateMessage = '';
 
-// Ambil data rilis terbaru dari API GitHub
-$latestReleaseData = @file_get_contents($latestVersionApiUrl, false, $context);
-$latestRelease = $latestReleaseData ? json_decode($latestReleaseData, true) : null;
-
-if ($latestRelease && isset($latestRelease['tag_name'])) {
-    $latestVersion = ltrim($latestRelease['tag_name'], 'v');
+// Ambil versi terbaru dari file version.txt di GitHub
+$latestVersionData = @file_get_contents($versionFileGithub, false, $context);
+if ($latestVersionData !== false) {
+    $latestVersion = trim($latestVersionData);
     if (version_compare($latestVersion, $currentVersion, '>')) {
         $updateAvailable = true;
         $updateMessage = "Versi baru ({$latestVersion}) tersedia.";
     }
 }
-
-include 'layout/header.php';
 ?>
+
 <main class="p-6 md:p-10 lg:p-12 w-full font-sans">
     <h2 class="text-3xl font-bold text-gray-800 mb-6">Pengaturan Website</h2>
 
@@ -139,7 +144,7 @@ include 'layout/header.php';
             <input type="text" id="site_name" name="site_name" value="<?php echo $siteName; ?>" required
                 class="mt-1 block w-full px-4 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         </div>
-        
+
         <div>
             <label for="favicon_file" class="block text-sm font-medium text-gray-700">Unggah Favicon (.ico)</label>
             <input type="file" id="favicon_file" name="favicon_file" accept=".ico"
@@ -150,16 +155,16 @@ include 'layout/header.php';
                 <img src="<?php echo $faviconUrl; ?>" alt="Favicon Website Saat Ini" class="w-8 h-8 rounded-full shadow">
             </div>
         </div>
-        
+
         <button type="submit"
                 class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out">
             Simpan Pengaturan
         </button>
     </form>
-    
+
     <div class="text-center p-4 mb-4 rounded-lg bg-gray-100 text-gray-800">
         <p class="font-semibold">Versi Aplikasi:</p>
-        <p>Versi saat ini: **<?php echo $currentVersion; ?>**</p>
+        <p>Versi saat ini: <?php echo $currentVersion; ?></p>
         <?php if ($updateAvailable): ?>
             <p class="text-green-600 mt-2 font-bold"><?php echo $updateMessage; ?></p>
             <button id="update-button" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
@@ -169,7 +174,7 @@ include 'layout/header.php';
             <p class="text-gray-500 mt-2">Anda menggunakan versi terbaru.</p>
         <?php endif; ?>
     </div>
-        
+
     <div id="update-status" class="hidden text-center p-4 mb-4 rounded-lg bg-gray-200 text-gray-800">
         <p class="font-semibold mb-2">Status Pembaruan:</p>
         <div id="status-messages" class="text-left text-sm"></div>
@@ -212,6 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
 <?php
 include 'layout/footer.php';
 ?>
