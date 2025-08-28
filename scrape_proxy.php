@@ -1,5 +1,4 @@
 <?php
-// scrape_proxy.php
 
 header('Content-Type: application/json');
 
@@ -18,7 +17,6 @@ if (empty($urlToScrape) || empty($accessToken)) {
     exit();
 }
 
-// Fungsi untuk mengirim permintaan POST ke Graph API
 function scrapeWithGraphAPI($url, $token) {
     $apiUrl = "https://graph.facebook.com/v23.0/";
     $postData = [
@@ -37,7 +35,6 @@ function scrapeWithGraphAPI($url, $token) {
     ]);
     $response = curl_exec($ch);
     
-    // Tangani error cURL
     if (curl_errno($ch)) {
         $error_msg = curl_error($ch);
         curl_close($ch);
@@ -48,7 +45,6 @@ function scrapeWithGraphAPI($url, $token) {
     return json_decode($response, true);
 }
 
-// Panggil fungsi scraping dan kirim responsnya
 $apiResponse = scrapeWithGraphAPI($urlToScrape, $accessToken);
 echo json_encode($apiResponse);
 ?>
