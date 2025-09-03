@@ -1,5 +1,5 @@
 {
-  "name": "project",
+  "name": "apextrack-mobile",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
@@ -9,16 +9,21 @@
     "web": "expo start --web",
     "build:android": "eas build --platform android",
     "build:ios": "eas build --platform ios",
-    "build:web": "expo export --platform web",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "build:web": "expo export --platform web"
   },
   "dependencies": {
-    "expo": "~53.0.22",
+    "expo": "~52.0.30",
+    "expo-router": "~4.0.17",
     "expo-status-bar": "~2.2.3",
+    "expo-secure-store": "~14.0.0",
+    "expo-clipboard": "~7.0.0",
     "react": "19.0.0",
-    "react-native": "0.79.6"
+    "react-native": "0.79.6",
+    "react-native-safe-area-context": "4.14.0",
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/bottom-tabs": "^6.5.11",
+    "@expo/vector-icons": "^14.0.4",
+    "@react-native-picker/picker": "2.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
